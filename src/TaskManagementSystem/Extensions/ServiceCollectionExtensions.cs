@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using TaskManagementSystem.Authorization;
 using TaskManagementSystem.Authorization.Handlers;
 using TaskManagementSystem.Configuration;
@@ -27,7 +26,6 @@ namespace TaskManagementSystem.Extensions;
 public static class ServiceCollectionExtensions
 {
     private const string ConnectionStringName = "DefaultConnection";
-    private const string BearerSchemeId = "Bearer";
 
     public static IServiceCollection AddDatabase(
         this IServiceCollection services,
@@ -272,56 +270,6 @@ public static class ServiceCollectionExtensions
             .AllowAnyMethod()
             .WithExposedHeaders(Middleware.CorrelationIdMiddleware.HeaderName)
             .SetPreflightMaxAge(TimeSpan.FromMinutes(10))));
-
-        return services;
-    }
-
-    /// <summary>
-    /// Generates the OpenAPI document (served at /openapi/v1.json), including the JWT "Bearer"
-    /// security scheme so Swagger UI shows an "Authorize" button and a lock on protected endpoints.
-    /// </summary>
-    public static IServiceCollection AddApiDocumentation(this IServiceCollection services)
-    {
-        services.AddOpenApi(options =>
-        {
-            options.AddDocumentTransformer((document, _, _) =>
-            {
-                document.Info.Title = "Task Management System API";
-                document.Info.Version = "v1";
-                document.Info.Description =
-                    "ASP.NET Core (.NET 10) monolithic Web API for managing projects, tasks, categories and comments.\n\n" +
-                    "To call protected endpoints: POST /api/auth/login, copy the accessToken, click **Authorize**, paste it.";
-
-                document.Components ??= new OpenApiComponents();
-                document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
-                document.Components.SecuritySchemes[BearerSchemeId] = new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Paste the accessToken from POST /api/auth/login (without the word 'Bearer')."
-                };
-                return Task.CompletedTask;
-            });
-
-            // Mark only endpoints that require authentication ([Authorize] without [AllowAnonymous]).
-            options.AddOperationTransformer((operation, context, _) =>
-            {
-                var metadata = context.Description.ActionDescriptor.EndpointMetadata;
-                var requiresAuth = metadata.OfType<IAuthorizeData>().Any()
-                                   && !metadata.OfType<IAllowAnonymous>().Any();
-                if (requiresAuth)
-                {
-                    operation.Security ??= [];
-                    operation.Security.Add(new OpenApiSecurityRequirement
-                    {
-                        [new OpenApiSecuritySchemeReference(BearerSchemeId, context.Document)] = []
-                    });
-                }
-                return Task.CompletedTask;
-            });
-        });
 
         return services;
     }

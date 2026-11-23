@@ -39,6 +39,7 @@ public sealed class CustomWebApplicationFactory : WebApplicationFactory<Program>
         builder.UseSetting("Jwt:SigningKey", "integration-tests-signing-key-0123456789-abcdefghijklmnopqrstuvwxyz");
         builder.UseSetting("SeedAdmin:Email", AdminEmail);
         builder.UseSetting("SeedAdmin:Password", AdminPassword);
+        builder.UseSetting("ApiDocumentation:Enabled", "true");   // so the OpenAPI contract can be tested
 
         builder.ConfigureTestServices(services =>
         {

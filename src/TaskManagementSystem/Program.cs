@@ -51,7 +51,7 @@ try
 
     builder.Services.AddProblemDetailsWithCorrelationId();   // RFC 9457 errors + "correlationId"
     builder.Services.AddCorsPolicy(builder.Configuration);
-    builder.Services.AddApiDocumentation();
+    builder.Services.AddApiDocumentation(builder.Configuration);   // OpenAPI document + transformers
     builder.Services.AddDatabase(builder.Configuration, builder.Environment);
     builder.Services.AddIdentityAndJwtAuthentication(builder.Configuration);
     builder.Services.AddAuthorizationPolicies();
@@ -73,7 +73,7 @@ try
     }
     app.UseHttpsRedirection();                          // 6. http → https
 
-    app.UseApiDocumentation();                          // 7. Development only: /openapi/v1.json + /swagger
+    app.UseApiDocumentation();                          // 7. if ApiDocumentation:Enabled: /openapi/v1.json + /swagger
 
     app.UseRouting();                                   // 8. match the endpoint
     app.UseCors(CorsSettings.PolicyName);               // 9. CORS (after routing, before auth: preflights need no token)

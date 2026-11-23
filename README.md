@@ -161,7 +161,7 @@ dotnet run --project src/TaskManagementSystem --launch-profile https
 ```
 The browser opens **Swagger UI** automatically:
 
-- Swagger UI (Development): `https://localhost:7188/swagger`  — explore and test every endpoint
+- Swagger UI (Development): `https://localhost:7188/swagger`  — explore and test every endpoint; request bodies are pre-filled with working examples, every operation lists its status codes, errors are documented as `application/problem+json`
 - OpenAPI document (Development): `https://localhost:7188/openapi/v1.json`
 - Health check: `https://localhost:7188/health`
 
@@ -221,7 +221,7 @@ All errors use the standard [ProblemDetails](https://www.rfc-editor.org/rfc/rfc9
 
 ### Test
 ```powershell
-dotnet test                                   # 138 unit tests + 20 integration tests
+dotnet test                                   # 138 unit tests + 29 integration tests (incl. OpenAPI contract tests)
 dotnet test tests/TaskManagementSystem.UnitTests   # unit tests only (no database needed)
 
 # merged coverage report → TestResults/CoverageReport/index.html
@@ -270,7 +270,7 @@ dotnet reportgenerator "-reports:TestResults/**/coverage.cobertura.xml" "-target
 | 11 | Serilog, correlation IDs, CORS, unified error handling | ✅ Done |
 | 12 | Search, filtering, sorting, pagination, dashboard | ✅ Done |
 | 13 | Unit & integration tests (158 tests, 86.9 % line coverage) | ✅ Done |
-| 14 | Swagger / OpenAPI documentation | ⏳ |
+| 14 | Swagger / OpenAPI documentation (+ contract tests) | ✅ Done |
 | 15 | Final README & GitHub polish | ⏳ |
 
 Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
@@ -292,5 +292,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [11 — Middleware, Validation & Logging](docs/11-Phase11-Middleware-Validation-Logging.md) | Pipeline order, Serilog, correlation IDs, unified errors, CORS, no secrets in logs |
 | [12 — Search, Sorting, Paging & Dashboard](docs/12-Phase12-Search-Sorting-Paging-Dashboard.md) | Safe sorting, business-order enums, stable paging, row-level security, SQL aggregates |
 | [13 — Unit & Integration Tests](docs/13-Phase13-Unit-and-Integration-Tests.md) | Test pyramid, AAA, mocks vs fakes, WebApplicationFactory, test database, coverage |
+| [14 — OpenAPI & Swagger](docs/14-Phase14-OpenAPI-and-Swagger.md) | Transformers, rule-based responses, examples, operationIds, contract tests |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.
