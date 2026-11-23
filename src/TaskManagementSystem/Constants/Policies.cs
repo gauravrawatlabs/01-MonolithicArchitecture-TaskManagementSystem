@@ -15,4 +15,7 @@ public static class Policies
 
     /// <summary>Composite: Admin role AND verified email — create/update/delete categories.</summary>
     public const string CanManageCategories = nameof(CanManageCategories);
+
+    /// <summary>Composite: (Admin OR Manager) AND verified email — create projects.</summary>
+    public const string CanCreateProjects = nameof(CanCreateProjects);
 }

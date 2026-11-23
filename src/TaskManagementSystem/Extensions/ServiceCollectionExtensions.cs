@@ -174,11 +174,18 @@ public static class ServiceCollectionExtensions
             .AddPolicy(Policies.CanManageCategories, policy => policy
                 .RequireAuthenticatedUser()
                 .RequireRole(Roles.Admin)
+                .RequireVerifiedEmail())
+
+            // RequireRole with several roles = OR (Admin OR Manager); chained requirements = AND.
+            .AddPolicy(Policies.CanCreateProjects, policy => policy
+                .RequireAuthenticatedUser()
+                .RequireRole(Roles.Admin, Roles.Manager)
                 .RequireVerifiedEmail());
 
         // RESOURCE-based handlers (invoked via IAuthorizationService.AuthorizeAsync(user, resource, operation)).
         // Singleton: pure logic without dependencies.
         services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
 
         return services;
     }
@@ -204,9 +211,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
 
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAccountEmailService, AccountEmailService>(); // scoped: uses UserManager

@@ -1,8 +1,7 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using TaskManagementSystem.Authorization.Operations;
-using TaskManagementSystem.Constants;
+using TaskManagementSystem.Extensions;
 using TaskManagementSystem.Models.Entities;
 
 namespace TaskManagementSystem.Authorization.Handlers;
@@ -32,11 +31,9 @@ public sealed class UserAuthorizationHandler
             return Task.CompletedTask; // unknown operation → not granted
         }
 
-        var isAdmin = context.User.IsInRole(Roles.Admin);
-        var isOwner = Guid.TryParse(context.User.FindFirstValue(AppClaimTypes.Subject), out var currentUserId)
-                      && currentUserId == resource.Id;
+        var isOwner = context.User.TryGetUserId(out var currentUserId) && currentUserId == resource.Id;
 
-        if (isAdmin || isOwner)
+        if (context.User.IsAdmin() || isOwner)
         {
             context.Succeed(requirement);
         }

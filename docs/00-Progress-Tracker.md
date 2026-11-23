@@ -9,8 +9,8 @@
 | 5 | Identity + JWT authentication | ✅ Verified (2026-11-23) | [05-Phase5-Identity-and-JWT.md](05-Phase5-Identity-and-JWT.md) |
 | 6 | Refresh tokens, email verification, forgot/reset/change password | ✅ Verified (2026-11-23) | [06-Phase6-Refresh-Tokens-and-Account-Flows.md](06-Phase6-Refresh-Tokens-and-Account-Flows.md) |
 | 7 | Roles, claims, policies, resource-based authorization (+ User module) | ✅ Verified (2026-11-23) | [07-Phase7-Authorization.md](07-Phase7-Authorization.md) |
-| 8 | Category CRUD APIs | 🟡 Implemented & verified — awaiting your review | [08-Phase8-Category-CRUD.md](08-Phase8-Category-CRUD.md) |
-| 9 | Project CRUD APIs | ⏳ Pending | |
+| 8 | Category CRUD APIs | ✅ Verified (2026-11-23) | [08-Phase8-Category-CRUD.md](08-Phase8-Category-CRUD.md) |
+| 9 | Project CRUD APIs + members | 🟡 Implemented & verified — awaiting your review | [09-Phase9-Projects.md](09-Phase9-Projects.md) |
 | 10 | Task CRUD, assignment, status, comments | ⏳ Pending | |
 | 11 | Validation, middleware, exception handling, logging | ⏳ Pending | |
 | 12 | Search, filter, sort, pagination, dashboard | ⏳ Pending | |

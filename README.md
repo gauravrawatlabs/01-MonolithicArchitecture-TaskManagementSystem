@@ -185,6 +185,13 @@ The browser opens **Swagger UI** automatically:
 | POST | `/api/categories` | Create a category (`201` + `Location`; `409` if the name exists) | 🔒 Admin + verified email |
 | PUT | `/api/categories/{id}` | Update a category | 🔒 Admin + verified email |
 | DELETE | `/api/categories/{id}` | Delete a category (tasks keep existing, uncategorized) | 🔒 Admin + verified email |
+| GET | `/api/projects` | Projects you own or belong to (Admin: all), search + paging | 🔒 Logged in |
+| GET | `/api/projects/{id}` | Project with members | 🔒 Members, Admin |
+| POST | `/api/projects` | Create a project (you become owner) | 🔒 Admin/Manager + verified email |
+| PUT | `/api/projects/{id}` | Update a project | 🔒 Owner, Admin |
+| DELETE | `/api/projects/{id}` | Delete a project (cascades tasks/comments) | 🔒 Owner, Admin |
+| POST | `/api/projects/{id}/members` | Add a team member | 🔒 Owner, Admin |
+| DELETE | `/api/projects/{id}/members/{userId}` | Remove a member (unassigns their tasks) | 🔒 Owner, Admin |
 | GET | `/api/users` | Search / filter / page users | 🔒 Admin + verified email |
 | GET | `/api/users/{id}` | A user's profile | 🔒 Self or Admin (resource-based) |
 | PUT | `/api/users/me` | Update own profile | 🔒 Verified email |
@@ -227,7 +234,8 @@ dotnet test
 | 6 | Refresh tokens, email verification, password flows | ✅ Done |
 | 7 | Roles, claims, policies, resource-based authorization, user management | ✅ Done |
 | 8 | Category CRUD API | ✅ Done |
-| 9–10 | Project, Task & Comment APIs | ⏳ |
+| 9 | Project API + team members | ✅ Done |
+| 10 | Task & Comment APIs | ⏳ |
 | 11 | Validation, middleware, exception handling, logging | ⏳ |
 | 12 | Search, filtering, sorting, pagination, dashboard | ⏳ |
 | 13 | Unit & integration tests | ⏳ |
@@ -248,5 +256,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [06 — Refresh Tokens & Account Flows](docs/06-Phase6-Refresh-Tokens-and-Account-Flows.md) | Rotation, reuse detection, logout with JWT, email verification, password reset/change |
 | [07 — Authorization](docs/07-Phase7-Authorization.md) | Fallback policy, role/claims/policy/resource-based authorization, user management |
 | [08 — Category CRUD](docs/08-Phase8-Category-CRUD.md) | Composite policies, REST status codes, validation layers, race-safe uniqueness |
+| [09 — Projects](docs/09-Phase9-Projects.md) | Owner/member authorization, 404 vs 403, row-level visibility, team management |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.
