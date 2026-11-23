@@ -76,6 +76,15 @@ public static class ServiceCollectionExtensions
         services.AddOptions<AdminSeedSettings>()
             .Bind(configuration.GetSection(AdminSeedSettings.SectionName));
 
+        services.AddOptions<EmailSettings>()
+            .Bind(configuration.GetSection(EmailSettings.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        // Email-confirmation and password-reset tokens expire after 3 hours (Identity default: 1 day).
+        services.Configure<DataProtectionTokenProviderOptions>(options =>
+            options.TokenLifespan = TimeSpan.FromHours(3));
+
         // AddIdentityCore (not AddIdentity): registers user/role management WITHOUT cookie
         // authentication. AddIdentity would make cookies the default scheme — wrong for a JWT API.
         services.AddIdentityCore<ApplicationUser>(options =>
@@ -142,7 +151,7 @@ public static class ServiceCollectionExtensions
     /// - Repositories: SCOPED — they depend on the scoped DbContext. A singleton repository would
     ///   capture one DbContext forever (captive dependency) and share it across requests.
     /// - Services: SCOPED — they depend on scoped repositories / UserManager; one instance per request.
-    /// - TokenService, TimeProvider: SINGLETON — stateless, thread-safe, depend only on singletons.
+    /// - TokenService, email sender, TimeProvider: SINGLETON — stateless, thread-safe, depend only on singletons.
     /// - Validators: TRANSIENT — tiny stateless objects; a new one per use is cheap and always safe.
     /// </summary>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
@@ -150,9 +159,16 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<ITokenService, TokenService>();
 
+        // Swap this one line for an SMTP / email-provider implementation in production.
+        services.AddSingleton<IEmailSender, PickupDirectoryEmailSender>();
+
         services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IAccountEmailService, AccountEmailService>(); // scoped: uses UserManager
 
         services.AddScoped<DbSeeder>();
 

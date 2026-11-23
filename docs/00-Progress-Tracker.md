@@ -6,8 +6,8 @@
 | 2 | Project creation + SQL Server / EF Core config | ✅ Verified (2026-11-23) | [02-Phase2-Project-Setup.md](02-Phase2-Project-Setup.md) |
 | 3 | Entities, DbContext, relationships, migrations, seed data | ✅ Verified (2026-11-23) | [03-Phase3-Entities-and-Migrations.md](03-Phase3-Entities-and-Migrations.md) |
 | 4 | Repository + Service layers (+ exception middleware, Swagger UI) | ✅ Verified (2026-11-23) | [04-Phase4-Repository-Service-Layers.md](04-Phase4-Repository-Service-Layers.md) |
-| 5 | Identity + JWT authentication | 🟡 Implemented & verified — awaiting your review | [05-Phase5-Identity-and-JWT.md](05-Phase5-Identity-and-JWT.md) |
-| 6 | Refresh tokens, email verification, forgot/reset/change password | ⏳ Pending | |
+| 5 | Identity + JWT authentication | ✅ Verified (2026-11-23) | [05-Phase5-Identity-and-JWT.md](05-Phase5-Identity-and-JWT.md) |
+| 6 | Refresh tokens, email verification, forgot/reset/change password | 🟡 Implemented & verified — awaiting your review | [06-Phase6-Refresh-Tokens-and-Account-Flows.md](06-Phase6-Refresh-Tokens-and-Account-Flows.md) |
 | 7 | Roles, claims, policies, resource-based authorization | ⏳ Pending | |
 | 8 | Category CRUD APIs | ⏳ Pending | |
 | 9 | Project CRUD APIs | ⏳ Pending | |

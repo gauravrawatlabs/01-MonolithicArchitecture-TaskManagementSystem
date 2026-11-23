@@ -4,13 +4,14 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using TaskManagementSystem.Configuration;
 using TaskManagementSystem.Constants;
+using TaskManagementSystem.Helpers;
 using TaskManagementSystem.Interfaces.Services;
 using TaskManagementSystem.Models.Entities;
 
 namespace TaskManagementSystem.Services;
 
 /// <summary>
-/// Builds and signs JWT access tokens (HMAC-SHA256).
+/// Builds and signs JWT access tokens (HMAC-SHA256) and generates refresh tokens.
 ///
 /// A JWT is three Base64Url parts: header.payload.signature
 ///   header    → {"alg":"HS256","typ":"JWT"}
@@ -55,4 +56,30 @@ public sealed class TokenService(IOptions<JwtSettings> jwtOptions, TimeProvider 
 
         return new AccessToken(_tokenHandler.CreateToken(descriptor), expiresAtUtc);
     }
+
+    /// <summary>
+    /// Refresh tokens are NOT JWTs: they are opaque random strings with no meaning on their own.
+    /// Their validity lives in the database (expiry, revocation), which is what makes them revocable.
+    /// </summary>
+    public IssuedRefreshToken CreateRefreshToken(Guid userId, string? createdByIp)
+    {
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var rawToken = SecureTokenGenerator.GenerateToken();
+
+        var entity = new RefreshToken
+        {
+            // Id generated in code (time-ordered GUID v7) so a token can reference its
+            // successor before saving (ReplacedByTokenId).
+            Id = Guid.CreateVersion7(),
+            UserId = userId,
+            TokenHash = SecureTokenGenerator.Hash(rawToken),
+            CreatedAtUtc = now,
+            ExpiresAtUtc = now.AddDays(jwtOptions.Value.RefreshTokenLifetimeDays),
+            CreatedByIp = createdByIp
+        };
+
+        return new IssuedRefreshToken(rawToken, entity);
+    }
+
+    public string HashRefreshToken(string rawToken) => SecureTokenGenerator.Hash(rawToken);
 }

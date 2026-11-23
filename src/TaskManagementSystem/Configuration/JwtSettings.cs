@@ -31,6 +31,13 @@ public sealed class JwtSettings
     [Range(1, 60)]
     public int AccessTokenLifetimeMinutes { get; set; } = 15;
 
+    /// <summary>
+    /// Refresh tokens are long-lived but stored (hashed) in the database, so they CAN be revoked
+    /// (logout, password change, theft detection).
+    /// </summary>
+    [Range(1, 90)]
+    public int RefreshTokenLifetimeDays { get; set; } = 7;
+
     /// <summary>The same key object is used to SIGN tokens (TokenService) and to VALIDATE them (JwtBearer).</summary>
     public SymmetricSecurityKey CreateSigningKey() => new(Encoding.UTF8.GetBytes(SigningKey));
 }

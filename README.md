@@ -170,13 +170,23 @@ The browser opens **Swagger UI** automatically:
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
 | POST | `/api/auth/register` | Create an account (role `User`) | Anonymous |
-| POST | `/api/auth/login` | Log in, returns a JWT access token | Anonymous |
+| POST | `/api/auth/login` | Log in → access token (15 min) + refresh token (7 days) | Anonymous |
+| POST | `/api/auth/refresh` | New token pair (rotation; reuse revokes all sessions) | Anonymous |
+| POST | `/api/auth/logout` | Revoke this device's refresh token | Anonymous |
+| POST | `/api/auth/logout-all` | Revoke all of the user's refresh tokens | 🔒 Bearer token |
 | GET | `/api/auth/me` | Current user's profile | 🔒 Bearer token |
+| POST | `/api/account/confirm-email` | Confirm email with the emailed token | Anonymous |
+| POST | `/api/account/resend-confirmation` | Send a new confirmation email | Anonymous |
+| POST | `/api/account/forgot-password` | Send a password-reset email | Anonymous |
+| POST | `/api/account/reset-password` | Set a new password with the emailed token | Anonymous |
+| POST | `/api/account/change-password` | Change password (ends all sessions) | 🔒 Bearer token |
 | GET | `/api/categories` | List all categories (ordered by name) | Public for now — secured in Phase 7 |
 | GET | `/api/categories/{id}` | Get a category; `404` ProblemDetails if missing | Public for now — secured in Phase 7 |
 | GET | `/health` | Database connectivity check | Public |
 
 **Testing protected endpoints in Swagger:** call `POST /api/auth/login`, copy `accessToken`, click **Authorize**, paste it.
+
+**Emails in development** (confirmation, password reset) are written as `.html` files to `src/TaskManagementSystem/emails/` (gitignored) — open them in a browser; each shows the JSON to paste into Swagger.
 
 All errors use the standard [ProblemDetails](https://www.rfc-editor.org/rfc/rfc9457) JSON format (validation errors include an `errors` object per field). More endpoints are added phase by phase.
 
@@ -206,7 +216,7 @@ dotnet test
 | 3 | Entities, DbContext, relationships, migrations, seed data | ✅ Done |
 | 4 | Repository & service layers, exception handling, Swagger UI | ✅ Done |
 | 5 | Identity + JWT authentication | ✅ Done |
-| 6 | Refresh tokens, email verification, password flows | ⏳ |
+| 6 | Refresh tokens, email verification, password flows | ✅ Done |
 | 7 | Roles, claims, policies, resource-based authorization | ⏳ |
 | 8–10 | Category, Project, Task & Comment APIs | ⏳ |
 | 11 | Validation, middleware, exception handling, logging | ⏳ |
@@ -226,5 +236,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [03 — Entities & Migrations](docs/03-Phase3-Entities-and-Migrations.md) | Entities, Fluent API, relationships, delete behaviors, indexes, seeding, migrations |
 | [04 — Repository & Service Layers](docs/04-Phase4-Repository-Service-Layers.md) | Layers, DI lifetimes, exceptions → ProblemDetails, Swagger UI |
 | [05 — Identity & JWT](docs/05-Phase5-Identity-and-JWT.md) | Identity, password hashing, JWT structure & validation, User Secrets, FluentValidation |
+| [06 — Refresh Tokens & Account Flows](docs/06-Phase6-Refresh-Tokens-and-Account-Flows.md) | Rotation, reuse detection, logout with JWT, email verification, password reset/change |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.

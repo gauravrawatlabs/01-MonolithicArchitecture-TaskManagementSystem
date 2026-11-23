@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Development email pickup directory (contains one-time tokens)
+**/emails/
