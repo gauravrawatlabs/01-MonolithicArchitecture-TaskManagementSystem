@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using TaskManagementSystem.Authorization.Handlers;
 using TaskManagementSystem.Configuration;
 using TaskManagementSystem.Constants;
 using TaskManagementSystem.Data;
@@ -139,7 +140,40 @@ public static class ServiceCollectionExtensions
                 };
             });
 
-        services.AddAuthorization();
+        return services;
+    }
+
+    /// <summary>
+    /// Authorization policies.
+    ///
+    /// FALLBACK policy = "secure by default": every endpoint WITHOUT an [Authorize]/[AllowAnonymous]
+    /// attribute requires an authenticated user. Forgetting an attribute on a new endpoint therefore
+    /// fails closed (401) instead of silently exposing data.
+    /// </summary>
+    public static IServiceCollection AddAuthorizationPolicies(this IServiceCollection services)
+    {
+        services.AddAuthorizationBuilder()
+            .SetFallbackPolicy(new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build())
+
+            // ROLE-based: reads the "role" claims (RoleClaimType configured in JwtBearer).
+            .AddPolicy(Policies.AdminOnly, policy => policy
+                .RequireAuthenticatedUser()
+                .RequireRole(Roles.Admin))
+
+            // CLAIMS-based: the decision is based on a claim's VALUE, not on a role.
+            // RequireAssertion + bool.TryParse accepts "true"/"True"; RequireClaim(type, "true")
+            // would do an exact, case-sensitive string match.
+            .AddPolicy(Policies.EmailVerified, policy => policy
+                .RequireAuthenticatedUser()
+                .RequireAssertion(context => context.User.HasClaim(claim =>
+                    claim.Type == AppClaimTypes.EmailVerified &&
+                    bool.TryParse(claim.Value, out var verified) && verified)));
+
+        // RESOURCE-based handlers (invoked via IAuthorizationService.AuthorizeAsync(user, resource, operation)).
+        // Singleton: pure logic without dependencies.
+        services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
 
         return services;
     }
@@ -164,8 +198,10 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAccountEmailService, AccountEmailService>(); // scoped: uses UserManager

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystem.Interfaces.Services;
 using TaskManagementSystem.Models.DTOs.Categories;
@@ -5,13 +6,13 @@ using TaskManagementSystem.Models.DTOs.Categories;
 namespace TaskManagementSystem.Controllers;
 
 /// <summary>
-/// Task categories (Bug, Feature, ...).
-/// Phase 4 exposes the read endpoints so the full request flow can be tested in Swagger.
-/// Create/update/delete endpoints and [Authorize] policies are added in Phases 7–8.
+/// Task categories (Bug, Feature, ...). Reading requires login (any role).
+/// Create/update/delete endpoints (Admin only) are added in Phase 8.
 /// </summary>
 [ApiController]
 [Route("api/categories")]
 [Tags("Categories")]
+[Authorize] // explicit, although the fallback policy would require login anyway
 public sealed class CategoriesController(ICategoryService categoryService) : ControllerBase
 {
     /// <summary>Gets all categories, ordered by name.</summary>

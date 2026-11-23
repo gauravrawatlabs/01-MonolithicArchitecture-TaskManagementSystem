@@ -13,6 +13,7 @@ public static class UserMappings
         user.LastName,
         user.JobTitle,
         user.EmailConfirmed,
+        user.IsActive,
         roles.Order().ToList(),
         user.CreatedAtUtc,
         user.LastLoginAtUtc);

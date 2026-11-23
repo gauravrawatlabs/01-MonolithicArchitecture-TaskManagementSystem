@@ -19,6 +19,7 @@ builder.Services.AddProblemDetails();       // standard RFC 9457 error format (u
 builder.Services.AddApiDocumentation();
 builder.Services.AddDatabase(builder.Configuration, builder.Environment);
 builder.Services.AddIdentityAndJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthorizationPolicies();
 builder.Services.AddApplicationServices();
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>(name: "database");
@@ -32,10 +33,10 @@ app.UseApiDocumentation();                          // Development only: /openap
 
 app.UseHttpsRedirection();
 app.UseAuthentication();                            // WHO are you? token → HttpContext.User
-app.UseAuthorization();                             // WHAT may you do? [Authorize] → 401 / 403
+app.UseAuthorization();                             // WHAT may you do? policies → 401 / 403
 
 app.MapControllers();
-app.MapHealthChecks("/health");                     // GET /health -> Healthy / Unhealthy
+app.MapHealthChecks("/health").AllowAnonymous();    // load balancers / monitors call it without a token
 
 // ---------- 3. Startup tasks ----------
 await app.SeedDatabaseAsync();                      // idempotent: creates the admin user if configured

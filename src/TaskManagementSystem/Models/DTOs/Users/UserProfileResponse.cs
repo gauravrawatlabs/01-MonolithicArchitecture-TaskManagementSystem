@@ -7,6 +7,7 @@ namespace TaskManagementSystem.Models.DTOs.Users;
 /// <param name="LastName">Last name.</param>
 /// <param name="JobTitle">Optional job title.</param>
 /// <param name="EmailConfirmed">Whether the email address has been verified.</param>
+/// <param name="IsActive">false = deactivated by an Admin (cannot log in).</param>
 /// <param name="Roles">Global roles: Admin, Manager and/or User.</param>
 /// <param name="CreatedAtUtc">When the account was created (UTC).</param>
 /// <param name="LastLoginAtUtc">Last successful login (UTC), or null.</param>
@@ -17,6 +18,7 @@ public sealed record UserProfileResponse(
     string LastName,
     string? JobTitle,
     bool EmailConfirmed,
+    bool IsActive,
     IReadOnlyList<string> Roles,
     DateTime CreatedAtUtc,
     DateTime? LastLoginAtUtc);

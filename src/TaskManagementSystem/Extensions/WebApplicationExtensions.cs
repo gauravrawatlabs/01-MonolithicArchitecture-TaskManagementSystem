@@ -18,7 +18,9 @@ public static class WebApplicationExtensions
             return app;
         }
 
-        app.MapOpenApi();
+        // The fallback policy requires login for every endpoint; the API description must stay
+        // readable without a token (Development only), so it is explicitly anonymous.
+        app.MapOpenApi().AllowAnonymous();
 
         app.UseSwaggerUI(options =>
         {
