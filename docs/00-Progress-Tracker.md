@@ -13,8 +13,8 @@
 | 9 | Project CRUD APIs + members | ✅ Verified (2026-11-24) | [09-Phase9-Projects.md](09-Phase9-Projects.md) |
 | 10 | Task CRUD, assignment, status, comments | ✅ Verified (2026-11-24) | [10-Phase10-Tasks-and-Comments.md](10-Phase10-Tasks-and-Comments.md) |
 | 11 | Validation, middleware, exception handling, logging | ✅ Verified (2026-11-24) | [11-Phase11-Middleware-Validation-Logging.md](11-Phase11-Middleware-Validation-Logging.md) |
-| 12 | Search, filter, sort, pagination, dashboard | 🟡 Implemented & verified — awaiting your review | [12-Phase12-Search-Sorting-Paging-Dashboard.md](12-Phase12-Search-Sorting-Paging-Dashboard.md) |
-| 13 | Unit + Integration tests | ⏳ Pending | |
+| 12 | Search, filter, sort, pagination, dashboard | ✅ Verified (2026-11-24) | [12-Phase12-Search-Sorting-Paging-Dashboard.md](12-Phase12-Search-Sorting-Paging-Dashboard.md) |
+| 13 | Unit + Integration tests | 🟡 Implemented & verified — awaiting your review (138 unit + 20 integration, 86.9 % line coverage) | [13-Phase13-Unit-and-Integration-Tests.md](13-Phase13-Unit-and-Integration-Tests.md) |
 | 14 | Swagger / OpenAPI finalization | ⏳ Pending | Swagger UI already added in Phase 4; Phase 14 adds JWT Authorize + polish |
 | 15 | README, .gitignore, GitHub push | ⏳ Pending | |
 

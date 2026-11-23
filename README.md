@@ -221,8 +221,17 @@ All errors use the standard [ProblemDetails](https://www.rfc-editor.org/rfc/rfc9
 
 ### Test
 ```powershell
-dotnet test
+dotnet test                                   # 138 unit tests + 20 integration tests
+dotnet test tests/TaskManagementSystem.UnitTests   # unit tests only (no database needed)
+
+# merged coverage report → TestResults/CoverageReport/index.html
+dotnet tool restore
+dotnet test --settings coverlet.runsettings --collect:"XPlat Code Coverage" --results-directory TestResults
+dotnet reportgenerator "-reports:TestResults/**/coverage.cobertura.xml" "-targetdir:TestResults/CoverageReport" "-reporttypes:Html;TextSummary"
 ```
+
+- **Unit tests** (xUnit + Moq + `FakeTimeProvider`): status workflow, validators, authorization handlers, services.
+- **Integration tests** (`WebApplicationFactory`): the real HTTP pipeline against a separate SQL Server database `TaskManagementDb_IntegrationTests`, recreated from the migrations on every run (the development database is never touched).
 
 ## Logging & Error Handling
 
@@ -260,7 +269,7 @@ dotnet test
 | 10 | Task & Comment APIs (workflow, assignment, comments) | ✅ Done |
 | 11 | Serilog, correlation IDs, CORS, unified error handling | ✅ Done |
 | 12 | Search, filtering, sorting, pagination, dashboard | ✅ Done |
-| 13 | Unit & integration tests | ⏳ |
+| 13 | Unit & integration tests (158 tests, 86.9 % line coverage) | ✅ Done |
 | 14 | Swagger / OpenAPI documentation | ⏳ |
 | 15 | Final README & GitHub polish | ⏳ |
 
@@ -282,5 +291,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [10 — Tasks & Comments](docs/10-Phase10-Tasks-and-Comments.md) | Status state machine, assignment rules, due dates, comment moderation |
 | [11 — Middleware, Validation & Logging](docs/11-Phase11-Middleware-Validation-Logging.md) | Pipeline order, Serilog, correlation IDs, unified errors, CORS, no secrets in logs |
 | [12 — Search, Sorting, Paging & Dashboard](docs/12-Phase12-Search-Sorting-Paging-Dashboard.md) | Safe sorting, business-order enums, stable paging, row-level security, SQL aggregates |
+| [13 — Unit & Integration Tests](docs/13-Phase13-Unit-and-Integration-Tests.md) | Test pyramid, AAA, mocks vs fakes, WebApplicationFactory, test database, coverage |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.
