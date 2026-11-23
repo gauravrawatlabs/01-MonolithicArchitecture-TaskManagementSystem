@@ -186,6 +186,8 @@ public static class ServiceCollectionExtensions
         // Singleton: pure logic without dependencies.
         services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
         services.AddSingleton<IAuthorizationHandler, ProjectAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, TaskAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, CommentAuthorizationHandler>();
 
         return services;
     }
@@ -212,10 +214,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<ICommentRepository, CommentRepository>();
 
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<ITaskService, TaskService>();
+        services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IAccountEmailService, AccountEmailService>(); // scoped: uses UserManager

@@ -192,6 +192,17 @@ The browser opens **Swagger UI** automatically:
 | DELETE | `/api/projects/{id}` | Delete a project (cascades tasks/comments) | 🔒 Owner, Admin |
 | POST | `/api/projects/{id}/members` | Add a team member | 🔒 Owner, Admin |
 | DELETE | `/api/projects/{id}/members/{userId}` | Remove a member (unassigns their tasks) | 🔒 Owner, Admin |
+| GET | `/api/tasks` | Tasks of your projects; filter by project, status, priority, assignee, search | 🔒 Logged in |
+| GET | `/api/tasks/{id}` | Task details (incl. `isOverdue`) | 🔒 Project members, Admin |
+| POST | `/api/tasks` | Create a task in a project you belong to | 🔒 Member + verified email |
+| PUT | `/api/tasks/{id}` | Update title, description, priority, due date, category | 🔒 Creator, project owner, Admin |
+| PATCH | `/api/tasks/{id}/assignee` | Assign to a project member / unassign | 🔒 Project owner, Admin |
+| PATCH | `/api/tasks/{id}/status` | Move through the workflow (invalid moves → `409`) | 🔒 Assignee, creator, project owner, Admin |
+| DELETE | `/api/tasks/{id}` | Delete a task and its comments | 🔒 Creator, project owner, Admin |
+| GET | `/api/tasks/{taskId}/comments` | A task's comments, oldest first | 🔒 Project members, Admin |
+| POST | `/api/tasks/{taskId}/comments` | Add a comment | 🔒 Member + verified email |
+| PUT | `/api/comments/{id}` | Edit a comment | 🔒 Author only |
+| DELETE | `/api/comments/{id}` | Delete a comment | 🔒 Author, project owner, Admin |
 | GET | `/api/users` | Search / filter / page users | 🔒 Admin + verified email |
 | GET | `/api/users/{id}` | A user's profile | 🔒 Self or Admin (resource-based) |
 | PUT | `/api/users/me` | Update own profile | 🔒 Verified email |
@@ -235,7 +246,7 @@ dotnet test
 | 7 | Roles, claims, policies, resource-based authorization, user management | ✅ Done |
 | 8 | Category CRUD API | ✅ Done |
 | 9 | Project API + team members | ✅ Done |
-| 10 | Task & Comment APIs | ⏳ |
+| 10 | Task & Comment APIs (workflow, assignment, comments) | ✅ Done |
 | 11 | Validation, middleware, exception handling, logging | ⏳ |
 | 12 | Search, filtering, sorting, pagination, dashboard | ⏳ |
 | 13 | Unit & integration tests | ⏳ |
@@ -257,5 +268,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [07 — Authorization](docs/07-Phase7-Authorization.md) | Fallback policy, role/claims/policy/resource-based authorization, user management |
 | [08 — Category CRUD](docs/08-Phase8-Category-CRUD.md) | Composite policies, REST status codes, validation layers, race-safe uniqueness |
 | [09 — Projects](docs/09-Phase9-Projects.md) | Owner/member authorization, 404 vs 403, row-level visibility, team management |
+| [10 — Tasks & Comments](docs/10-Phase10-Tasks-and-Comments.md) | Status state machine, assignment rules, due dates, comment moderation |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.

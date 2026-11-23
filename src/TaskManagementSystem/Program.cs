@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using TaskManagementSystem.Data;
 using TaskManagementSystem.Extensions;
 using TaskManagementSystem.Filters;
@@ -14,7 +15,15 @@ builder.Services.AddControllers(options =>
     // FluentValidation is the single source of validation rules; don't let MVC add an implicit
     // [Required] for non-nullable reference types (that would produce a second, different message).
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
-});
+})
+.AddJsonOptions(options =>
+    // Enums as readable strings ("InProgress") instead of numbers (1) in requests and responses.
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// The OpenAPI generator reads these (minimal-API) JSON options — keep them in sync so the
+// documented schema also shows enums as strings.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddProblemDetails();       // standard RFC 9457 error format (used by the middleware below)
 builder.Services.AddApiDocumentation();
 builder.Services.AddDatabase(builder.Configuration, builder.Environment);
