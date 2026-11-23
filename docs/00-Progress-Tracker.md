@@ -15,7 +15,7 @@
 | 11 | Validation, middleware, exception handling, logging | ✅ Verified (2026-11-24) | [11-Phase11-Middleware-Validation-Logging.md](11-Phase11-Middleware-Validation-Logging.md) |
 | 12 | Search, filter, sort, pagination, dashboard | ✅ Verified (2026-11-24) | [12-Phase12-Search-Sorting-Paging-Dashboard.md](12-Phase12-Search-Sorting-Paging-Dashboard.md) |
 | 13 | Unit + Integration tests | ✅ Verified (2026-11-24) — 138 unit + 20 integration, 86.9 % line coverage | [13-Phase13-Unit-and-Integration-Tests.md](13-Phase13-Unit-and-Integration-Tests.md) |
-| 14 | Swagger / OpenAPI finalization | 🟡 Implemented & verified — awaiting your review (+9 contract tests) | [14-Phase14-OpenAPI-and-Swagger.md](14-Phase14-OpenAPI-and-Swagger.md) |
-| 15 | README, .gitignore, GitHub push | ⏳ Pending | |
+| 14 | Swagger / OpenAPI finalization | ✅ Verified (2026-11-24) — +9 contract tests | [14-Phase14-OpenAPI-and-Swagger.md](14-Phase14-OpenAPI-and-Swagger.md) |
+| 15 | README, .gitignore, GitHub push | ✅ Done (2026-11-24) | [15-Phase15-Git-GitHub-and-Release.md](15-Phase15-Git-GitHub-and-Release.md) |
 
 **Legend:** ✅ Verified · 🟡 In progress / awaiting approval · ⏳ Pending · ❌ Blocked
