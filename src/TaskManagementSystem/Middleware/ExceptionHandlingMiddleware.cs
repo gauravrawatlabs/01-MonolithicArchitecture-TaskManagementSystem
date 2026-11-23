@@ -88,6 +88,16 @@ public sealed class ExceptionHandlingMiddleware(
             Instance = $"{context.Request.Method} {context.Request.Path}"
         };
 
+        // Validation errors get an extra "errors" dictionary { "password": ["..."], ... } that clients
+        // can show next to each field (the same JSON shape as ValidationProblemDetails).
+        // NOTE: we add it as an extension instead of using ValidationProblemDetails, because
+        // IProblemDetailsService serializes the declared ProblemDetails type and would silently
+        // drop the derived class's Errors property.
+        if (exception is RequestValidationException validationException)
+        {
+            problemDetails.Extensions["errors"] = validationException.Errors;
+        }
+
         // IProblemDetailsService writes application/problem+json and adds "type" and "traceId".
         await problemDetailsService.WriteAsync(new ProblemDetailsContext
         {

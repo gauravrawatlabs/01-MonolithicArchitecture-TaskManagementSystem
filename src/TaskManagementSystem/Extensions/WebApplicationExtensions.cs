@@ -1,3 +1,5 @@
+using TaskManagementSystem.Data.Seed;
+
 namespace TaskManagementSystem.Extensions;
 
 /// <summary>Groups middleware/endpoint setup so Program.cs stays readable.</summary>
@@ -24,8 +26,21 @@ public static class WebApplicationExtensions
             options.RoutePrefix = "swagger";
             options.DocumentTitle = "Task Management System API";
             options.DisplayRequestDuration();
+            options.EnablePersistAuthorization(); // keep the pasted token after a page refresh
         });
 
         return app;
+    }
+
+    /// <summary>
+    /// Runs the idempotent startup seeder (admin user). The app's root service provider has no
+    /// HTTP request scope, so we create a scope manually to resolve scoped services
+    /// (DbSeeder → UserManager → DbContext).
+    /// </summary>
+    public static async Task SeedDatabaseAsync(this WebApplication app)
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+        var seeder = scope.ServiceProvider.GetRequiredService<DbSeeder>();
+        await seeder.SeedAsync();
     }
 }

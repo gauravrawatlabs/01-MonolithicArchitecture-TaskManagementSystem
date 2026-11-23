@@ -136,6 +136,17 @@ dotnet tool restore                # installs dotnet-ef from dotnet-tools.json
 dotnet build
 ```
 
+### Secrets (User Secrets — never committed)
+```powershell
+# JWT signing key: at least 32 random characters
+$b = New-Object byte[] 64; [Security.Cryptography.RandomNumberGenerator]::Fill($b)
+dotnet user-secrets set "Jwt:SigningKey" ([Convert]::ToBase64String($b)) --project src/TaskManagementSystem
+
+# First admin account, created automatically at startup
+dotnet user-secrets set "SeedAdmin:Email" "admin@taskmanagement.local" --project src/TaskManagementSystem
+dotnet user-secrets set "SeedAdmin:Password" "<strong password>" --project src/TaskManagementSystem
+```
+
 The development connection string is in `src/TaskManagementSystem/appsettings.Development.json` (Windows authentication, `Server=localhost`). Adjust it for your SQL Server instance, or override it with the `ConnectionStrings__DefaultConnection` environment variable.
 
 ### Database / migrations
@@ -158,11 +169,16 @@ The browser opens **Swagger UI** automatically:
 
 | Method | Endpoint | Description | Auth |
 |---|---|---|---|
+| POST | `/api/auth/register` | Create an account (role `User`) | Anonymous |
+| POST | `/api/auth/login` | Log in, returns a JWT access token | Anonymous |
+| GET | `/api/auth/me` | Current user's profile | 🔒 Bearer token |
 | GET | `/api/categories` | List all categories (ordered by name) | Public for now — secured in Phase 7 |
 | GET | `/api/categories/{id}` | Get a category; `404` ProblemDetails if missing | Public for now — secured in Phase 7 |
 | GET | `/health` | Database connectivity check | Public |
 
-All errors use the standard [ProblemDetails](https://www.rfc-editor.org/rfc/rfc9457) JSON format. More endpoints are added phase by phase.
+**Testing protected endpoints in Swagger:** call `POST /api/auth/login`, copy `accessToken`, click **Authorize**, paste it.
+
+All errors use the standard [ProblemDetails](https://www.rfc-editor.org/rfc/rfc9457) JSON format (validation errors include an `errors` object per field). More endpoints are added phase by phase.
 
 ### Test
 ```powershell
@@ -189,7 +205,7 @@ dotnet test
 | 2 | Project setup, SQL Server & EF Core configuration | ✅ Done |
 | 3 | Entities, DbContext, relationships, migrations, seed data | ✅ Done |
 | 4 | Repository & service layers, exception handling, Swagger UI | ✅ Done |
-| 5 | Identity + JWT authentication | ⏳ |
+| 5 | Identity + JWT authentication | ✅ Done |
 | 6 | Refresh tokens, email verification, password flows | ⏳ |
 | 7 | Roles, claims, policies, resource-based authorization | ⏳ |
 | 8–10 | Category, Project, Task & Comment APIs | ⏳ |
@@ -209,5 +225,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [02 — Project Setup](docs/02-Phase2-Project-Setup.md) | Solution setup, EF Core + SQL Server, DbContext lifetime, configuration |
 | [03 — Entities & Migrations](docs/03-Phase3-Entities-and-Migrations.md) | Entities, Fluent API, relationships, delete behaviors, indexes, seeding, migrations |
 | [04 — Repository & Service Layers](docs/04-Phase4-Repository-Service-Layers.md) | Layers, DI lifetimes, exceptions → ProblemDetails, Swagger UI |
+| [05 — Identity & JWT](docs/05-Phase5-Identity-and-JWT.md) | Identity, password hashing, JWT structure & validation, User Secrets, FluentValidation |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.

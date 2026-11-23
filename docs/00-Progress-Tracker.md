@@ -5,8 +5,8 @@
 | 1 | Requirements, architecture, ER design, folder structure | ✅ Verified (2026-11-23) | [01-Phase1-Architecture-and-Design.md](01-Phase1-Architecture-and-Design.md) |
 | 2 | Project creation + SQL Server / EF Core config | ✅ Verified (2026-11-23) | [02-Phase2-Project-Setup.md](02-Phase2-Project-Setup.md) |
 | 3 | Entities, DbContext, relationships, migrations, seed data | ✅ Verified (2026-11-23) | [03-Phase3-Entities-and-Migrations.md](03-Phase3-Entities-and-Migrations.md) |
-| 4 | Repository + Service layers (+ exception middleware, Swagger UI) | 🟡 Implemented & verified — awaiting your review | [04-Phase4-Repository-Service-Layers.md](04-Phase4-Repository-Service-Layers.md) |
-| 5 | Identity + JWT authentication | ⏳ Pending | |
+| 4 | Repository + Service layers (+ exception middleware, Swagger UI) | ✅ Verified (2026-11-23) | [04-Phase4-Repository-Service-Layers.md](04-Phase4-Repository-Service-Layers.md) |
+| 5 | Identity + JWT authentication | 🟡 Implemented & verified — awaiting your review | [05-Phase5-Identity-and-JWT.md](05-Phase5-Identity-and-JWT.md) |
 | 6 | Refresh tokens, email verification, forgot/reset/change password | ⏳ Pending | |
 | 7 | Roles, claims, policies, resource-based authorization | ⏳ Pending | |
 | 8 | Category CRUD APIs | ⏳ Pending | |
