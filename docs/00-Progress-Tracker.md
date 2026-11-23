@@ -8,8 +8,8 @@
 | 4 | Repository + Service layers (+ exception middleware, Swagger UI) | ✅ Verified (2026-11-23) | [04-Phase4-Repository-Service-Layers.md](04-Phase4-Repository-Service-Layers.md) |
 | 5 | Identity + JWT authentication | ✅ Verified (2026-11-23) | [05-Phase5-Identity-and-JWT.md](05-Phase5-Identity-and-JWT.md) |
 | 6 | Refresh tokens, email verification, forgot/reset/change password | ✅ Verified (2026-11-23) | [06-Phase6-Refresh-Tokens-and-Account-Flows.md](06-Phase6-Refresh-Tokens-and-Account-Flows.md) |
-| 7 | Roles, claims, policies, resource-based authorization (+ User module) | 🟡 Implemented & verified — awaiting your review | [07-Phase7-Authorization.md](07-Phase7-Authorization.md) |
-| 8 | Category CRUD APIs | ⏳ Pending | |
+| 7 | Roles, claims, policies, resource-based authorization (+ User module) | ✅ Verified (2026-11-23) | [07-Phase7-Authorization.md](07-Phase7-Authorization.md) |
+| 8 | Category CRUD APIs | 🟡 Implemented & verified — awaiting your review | [08-Phase8-Category-CRUD.md](08-Phase8-Category-CRUD.md) |
 | 9 | Project CRUD APIs | ⏳ Pending | |
 | 10 | Task CRUD, assignment, status, comments | ⏳ Pending | |
 | 11 | Validation, middleware, exception handling, logging | ⏳ Pending | |

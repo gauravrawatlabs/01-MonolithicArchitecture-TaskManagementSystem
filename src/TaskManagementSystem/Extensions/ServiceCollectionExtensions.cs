@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using TaskManagementSystem.Authorization;
 using TaskManagementSystem.Authorization.Handlers;
 using TaskManagementSystem.Configuration;
 using TaskManagementSystem.Constants;
@@ -163,13 +164,17 @@ public static class ServiceCollectionExtensions
                 .RequireRole(Roles.Admin))
 
             // CLAIMS-based: the decision is based on a claim's VALUE, not on a role.
-            // RequireAssertion + bool.TryParse accepts "true"/"True"; RequireClaim(type, "true")
-            // would do an exact, case-sensitive string match.
             .AddPolicy(Policies.EmailVerified, policy => policy
                 .RequireAuthenticatedUser()
-                .RequireAssertion(context => context.User.HasClaim(claim =>
-                    claim.Type == AppClaimTypes.EmailVerified &&
-                    bool.TryParse(claim.Value, out var verified) && verified)));
+                .RequireVerifiedEmail())
+
+            // ONE policy with SEVERAL requirements (all must pass). Compare with stacking two
+            // [Authorize] attributes: same AND logic, but the rule lives in one named place,
+            // so the controller just says "CanManageCategories" and the definition can evolve.
+            .AddPolicy(Policies.CanManageCategories, policy => policy
+                .RequireAuthenticatedUser()
+                .RequireRole(Roles.Admin)
+                .RequireVerifiedEmail());
 
         // RESOURCE-based handlers (invoked via IAuthorizationService.AuthorizeAsync(user, resource, operation)).
         // Singleton: pure logic without dependencies.

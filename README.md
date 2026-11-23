@@ -182,6 +182,9 @@ The browser opens **Swagger UI** automatically:
 | POST | `/api/account/change-password` | Change password (ends all sessions) | 🔒 Bearer token |
 | GET | `/api/categories` | List all categories (ordered by name) | 🔒 Any logged-in user |
 | GET | `/api/categories/{id}` | Get a category; `404` ProblemDetails if missing | 🔒 Any logged-in user |
+| POST | `/api/categories` | Create a category (`201` + `Location`; `409` if the name exists) | 🔒 Admin + verified email |
+| PUT | `/api/categories/{id}` | Update a category | 🔒 Admin + verified email |
+| DELETE | `/api/categories/{id}` | Delete a category (tasks keep existing, uncategorized) | 🔒 Admin + verified email |
 | GET | `/api/users` | Search / filter / page users | 🔒 Admin + verified email |
 | GET | `/api/users/{id}` | A user's profile | 🔒 Self or Admin (resource-based) |
 | PUT | `/api/users/me` | Update own profile | 🔒 Verified email |
@@ -223,7 +226,8 @@ dotnet test
 | 5 | Identity + JWT authentication | ✅ Done |
 | 6 | Refresh tokens, email verification, password flows | ✅ Done |
 | 7 | Roles, claims, policies, resource-based authorization, user management | ✅ Done |
-| 8–10 | Category, Project, Task & Comment APIs | ⏳ |
+| 8 | Category CRUD API | ✅ Done |
+| 9–10 | Project, Task & Comment APIs | ⏳ |
 | 11 | Validation, middleware, exception handling, logging | ⏳ |
 | 12 | Search, filtering, sorting, pagination, dashboard | ⏳ |
 | 13 | Unit & integration tests | ⏳ |
@@ -243,5 +247,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [05 — Identity & JWT](docs/05-Phase5-Identity-and-JWT.md) | Identity, password hashing, JWT structure & validation, User Secrets, FluentValidation |
 | [06 — Refresh Tokens & Account Flows](docs/06-Phase6-Refresh-Tokens-and-Account-Flows.md) | Rotation, reuse detection, logout with JWT, email verification, password reset/change |
 | [07 — Authorization](docs/07-Phase7-Authorization.md) | Fallback policy, role/claims/policy/resource-based authorization, user management |
+| [08 — Category CRUD](docs/08-Phase8-Category-CRUD.md) | Composite policies, REST status codes, validation layers, race-safe uniqueness |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.

@@ -12,4 +12,7 @@ public static class Policies
 
     /// <summary>Claims-based: the token must contain email_verified = true.</summary>
     public const string EmailVerified = nameof(EmailVerified);
+
+    /// <summary>Composite: Admin role AND verified email — create/update/delete categories.</summary>
+    public const string CanManageCategories = nameof(CanManageCategories);
 }
