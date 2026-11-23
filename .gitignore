@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Development email pickup directory (contains one-time tokens)
 **/emails/
+
+# Local UI design references (not part of the published repository)
+UIimages/
