@@ -148,8 +148,21 @@ dotnet ef migrations add <MigrationName> --project src/TaskManagementSystem     
 ```powershell
 dotnet run --project src/TaskManagementSystem --launch-profile https
 ```
-- Health check: `https://localhost:7188/health`
+The browser opens **Swagger UI** automatically:
+
+- Swagger UI (Development): `https://localhost:7188/swagger`  — explore and test every endpoint
 - OpenAPI document (Development): `https://localhost:7188/openapi/v1.json`
+- Health check: `https://localhost:7188/health`
+
+## API Endpoints
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| GET | `/api/categories` | List all categories (ordered by name) | Public for now — secured in Phase 7 |
+| GET | `/api/categories/{id}` | Get a category; `404` ProblemDetails if missing | Public for now — secured in Phase 7 |
+| GET | `/health` | Database connectivity check | Public |
+
+All errors use the standard [ProblemDetails](https://www.rfc-editor.org/rfc/rfc9457) JSON format. More endpoints are added phase by phase.
 
 ### Test
 ```powershell
@@ -175,7 +188,7 @@ dotnet test
 | 1 | Requirements, architecture, ER design, folder structure | ✅ Done |
 | 2 | Project setup, SQL Server & EF Core configuration | ✅ Done |
 | 3 | Entities, DbContext, relationships, migrations, seed data | ✅ Done |
-| 4 | Repository & service layers | ⏳ |
+| 4 | Repository & service layers, exception handling, Swagger UI | ✅ Done |
 | 5 | Identity + JWT authentication | ⏳ |
 | 6 | Refresh tokens, email verification, password flows | ⏳ |
 | 7 | Roles, claims, policies, resource-based authorization | ⏳ |
@@ -195,5 +208,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [01 — Architecture & Design](docs/01-Phase1-Architecture-and-Design.md) | Monolith concepts, diagrams, modules, permissions, ER design, folder structure |
 | [02 — Project Setup](docs/02-Phase2-Project-Setup.md) | Solution setup, EF Core + SQL Server, DbContext lifetime, configuration |
 | [03 — Entities & Migrations](docs/03-Phase3-Entities-and-Migrations.md) | Entities, Fluent API, relationships, delete behaviors, indexes, seeding, migrations |
+| [04 — Repository & Service Layers](docs/04-Phase4-Repository-Service-Layers.md) | Layers, DI lifetimes, exceptions → ProblemDetails, Swagger UI |
 
-API endpoints, testing details and interview questions will be added here as the corresponding phases are completed.
+Testing details and interview questions will be added here as the corresponding phases are completed.

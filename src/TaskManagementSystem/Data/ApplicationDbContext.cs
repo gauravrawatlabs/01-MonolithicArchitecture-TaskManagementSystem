@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TaskManagementSystem.Data.Converters;
 using TaskManagementSystem.Enums;
 using TaskManagementSystem.Models.Entities;
 
@@ -38,5 +39,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         configurationBuilder.Properties<TaskItemStatus>().HaveConversion<string>().HaveMaxLength(20);
         configurationBuilder.Properties<TaskPriority>().HaveConversion<string>().HaveMaxLength(20);
         configurationBuilder.Properties<ProjectMemberRole>().HaveConversion<string>().HaveMaxLength(20);
+
+        // Every DateTime / DateTime? column is UTC: mark values as UTC when reading them back.
+        configurationBuilder.Properties<DateTime>().HaveConversion<UtcDateTimeConverter>();
     }
 }
