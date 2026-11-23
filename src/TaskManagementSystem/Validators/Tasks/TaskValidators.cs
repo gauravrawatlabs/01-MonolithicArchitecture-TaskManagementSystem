@@ -1,6 +1,7 @@
 using FluentValidation;
 using TaskManagementSystem.Helpers;
 using TaskManagementSystem.Models.DTOs.Tasks;
+using TaskManagementSystem.Validators.Common;
 
 namespace TaskManagementSystem.Validators.Tasks;
 
@@ -65,15 +66,19 @@ public sealed class ChangeTaskStatusRequestValidator : AbstractValidator<ChangeT
     }
 }
 
-public sealed class TaskQueryParametersValidator : AbstractValidator<TaskQueryParameters>
+public sealed class TaskQueryParametersValidator : PagedQueryValidator<TaskQueryParameters>
 {
     public TaskQueryParametersValidator()
     {
         RuleFor(x => x.ProjectId).GreaterThan(0).When(x => x.ProjectId is not null);
+        RuleFor(x => x.CategoryId).GreaterThan(0).When(x => x.CategoryId is not null);
         RuleFor(x => x.Status).IsInEnum();
         RuleFor(x => x.Priority).IsInEnum();
-        RuleFor(x => x.Search).MaximumLength(100);
-        RuleFor(x => x.Page).GreaterThanOrEqualTo(1);
-        RuleFor(x => x.PageSize).InclusiveBetween(1, 100);
+        RuleFor(x => x.Search).MaximumLength(SearchMaxLength);
+        RuleFor(x => x.SortBy).IsInEnum();
+        RuleFor(x => x.SortDirection).IsInEnum();
+        RuleFor(x => x.DueTo)
+            .Must((query, dueTo) => query.DueFrom is null || dueTo is null || query.DueFrom.Value.AsUtc() <= dueTo.Value.AsUtc())
+            .WithMessage("dueTo must be on or after dueFrom.");
     }
 }

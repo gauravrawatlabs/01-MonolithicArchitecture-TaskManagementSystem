@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagementSystem.Data;
+using TaskManagementSystem.Enums;
+using TaskManagementSystem.Helpers;
 using TaskManagementSystem.Interfaces.Repositories;
 using TaskManagementSystem.Models.DTOs.Projects;
 using TaskManagementSystem.Models.Entities;
@@ -12,13 +14,12 @@ public sealed class ProjectRepository(ApplicationDbContext dbContext) : IProject
     public async Task<(IReadOnlyList<ProjectSummaryResponse> Items, int TotalCount)> GetPagedForUserAsync(
         ProjectQueryParameters query, Guid userId, bool isAdmin, CancellationToken cancellationToken)
     {
-        var projects = dbContext.Projects.AsNoTracking();
+        // Row-level visibility (shared rule): owner or member; Admin sees all.
+        var projects = dbContext.Projects.AsNoTracking().VisibleTo(userId, isAdmin);
 
-        if (!isAdmin)
+        if (query.OwnedByMe == true)
         {
-            // Row-level visibility: owner or member. (The owner is also stored as a member,
-            // but checking OwnerId too keeps the rule correct even if that row were missing.)
-            projects = projects.Where(p => p.OwnerId == userId || p.Members.Any(m => m.UserId == userId));
+            projects = projects.Where(p => p.OwnerId == userId);
         }
 
         if (!string.IsNullOrWhiteSpace(query.Search))
@@ -29,11 +30,8 @@ public sealed class ProjectRepository(ApplicationDbContext dbContext) : IProject
 
         var totalCount = await projects.CountAsync(cancellationToken);
 
-        var items = await projects
-            .OrderByDescending(p => p.CreatedAtUtc)
-            .ThenBy(p => p.Id)
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
+        var items = await ApplySorting(projects, query)
+            .ApplyPaging(query)
             .Select(p => new ProjectSummaryResponse(
                 p.Id,
                 p.Name,
@@ -67,6 +65,24 @@ public sealed class ProjectRepository(ApplicationDbContext dbContext) : IProject
         dbContext.Tasks
             .Where(t => t.ProjectId == projectId && t.AssignedToId == userId)
             .ExecuteUpdateAsync(setters => setters.SetProperty(t => t.AssignedToId, (Guid?)null), cancellationToken);
+
+    /// <summary>Whitelisted sorting with a unique tiebreaker (Id) for stable paging; null dates last.</summary>
+    private static IOrderedQueryable<Project> ApplySorting(IQueryable<Project> projects, ProjectQueryParameters query)
+    {
+        var direction = query.SortDirection
+                        ?? (query.SortBy == ProjectSortField.CreatedAt ? SortDirection.Desc : SortDirection.Asc);
+
+        var sorted = query.SortBy switch
+        {
+            ProjectSortField.CreatedAt => projects.OrderByDirection(p => p.CreatedAtUtc, direction),
+            ProjectSortField.Name => projects.OrderByDirection(p => p.Name, direction),
+            ProjectSortField.StartDate => projects.OrderBy(p => p.StartDate == null).ThenByDirection(p => p.StartDate, direction),
+            ProjectSortField.EndDate => projects.OrderBy(p => p.EndDate == null).ThenByDirection(p => p.EndDate, direction),
+            _ => throw new ArgumentOutOfRangeException(nameof(query), query.SortBy, "Unsupported sort field.")
+        };
+
+        return sorted.ThenBy(p => p.Id);
+    }
 
     public void Add(Project project) => dbContext.Projects.Add(project);
 

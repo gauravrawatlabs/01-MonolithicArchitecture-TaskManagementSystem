@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagementSystem.Data;
+using TaskManagementSystem.Enums;
+using TaskManagementSystem.Helpers;
 using TaskManagementSystem.Interfaces.Repositories;
 using TaskManagementSystem.Models.DTOs.Users;
 
@@ -36,10 +38,22 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
         // Count BEFORE paging (same filters), so the client knows how many pages exist.
         var totalCount = await users.CountAsync(cancellationToken);
 
-        var items = await users
-            .OrderBy(u => u.Email)          // paging requires a stable order
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
+        var direction = query.SortDirection
+                        ?? (query.SortBy is UserSortField.CreatedAt or UserSortField.LastLogin ? SortDirection.Desc : SortDirection.Asc);
+
+        // Whitelisted sorting + unique tiebreaker (Id) → stable paging.
+        var sorted = query.SortBy switch
+        {
+            UserSortField.Email => users.OrderByDirection(u => u.Email, direction),
+            UserSortField.Name => users.OrderByDirection(u => u.FirstName, direction).ThenByDirection(u => u.LastName, direction),
+            UserSortField.CreatedAt => users.OrderByDirection(u => u.CreatedAtUtc, direction),
+            UserSortField.LastLogin => users.OrderBy(u => u.LastLoginAtUtc == null).ThenByDirection(u => u.LastLoginAtUtc, direction),
+            _ => throw new ArgumentOutOfRangeException(nameof(query), query.SortBy, "Unsupported sort field.")
+        };
+
+        var items = await sorted
+            .ThenBy(u => u.Id)
+            .ApplyPaging(query)
             .Select(u => new UserProfileResponse(
                 u.Id,
                 u.Email!,

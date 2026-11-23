@@ -1,5 +1,6 @@
 using FluentValidation;
 using TaskManagementSystem.Models.DTOs.Projects;
+using TaskManagementSystem.Validators.Common;
 
 namespace TaskManagementSystem.Validators.Projects;
 
@@ -47,12 +48,12 @@ public sealed class AddProjectMemberRequestValidator : AbstractValidator<AddProj
     }
 }
 
-public sealed class ProjectQueryParametersValidator : AbstractValidator<ProjectQueryParameters>
+public sealed class ProjectQueryParametersValidator : PagedQueryValidator<ProjectQueryParameters>
 {
     public ProjectQueryParametersValidator()
     {
-        RuleFor(x => x.Search).MaximumLength(100);
-        RuleFor(x => x.Page).GreaterThanOrEqualTo(1);
-        RuleFor(x => x.PageSize).InclusiveBetween(1, 100);
+        RuleFor(x => x.Search).MaximumLength(SearchMaxLength);
+        RuleFor(x => x.SortBy).IsInEnum();
+        RuleFor(x => x.SortDirection).IsInEnum();
     }
 }

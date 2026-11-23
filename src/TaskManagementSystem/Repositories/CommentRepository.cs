@@ -19,7 +19,7 @@ public sealed class CommentRepository(ApplicationDbContext dbContext) : IComment
         // Uses IX_Comments_TaskId_CreatedAtUtc (Phase 3): filter + order come straight from the index.
         var items = await ProjectToResponse(comments
                 .OrderBy(c => c.CreatedAtUtc)
-                .ThenBy(c => c.Id)
+                .ThenBy(c => c.Id)                 // unique tiebreaker → stable paging
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize))
             .ToListAsync(cancellationToken);

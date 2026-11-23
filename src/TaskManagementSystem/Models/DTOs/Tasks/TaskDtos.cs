@@ -1,4 +1,5 @@
 using TaskManagementSystem.Enums;
+using TaskManagementSystem.Models.DTOs.Common;
 
 namespace TaskManagementSystem.Models.DTOs.Tasks;
 
@@ -77,8 +78,8 @@ public sealed record AssignTaskRequest(Guid? AssignedToId);
 /// <param name="Status">Todo, InProgress, InReview, Done or Cancelled.</param>
 public sealed record ChangeTaskStatusRequest(TaskItemStatus Status);
 
-/// <summary>Filters and paging for the task list (bound from the query string).</summary>
-public sealed class TaskQueryParameters
+/// <summary>Search, filters, sorting and paging for the task list (bound from the query string).</summary>
+public sealed class TaskQueryParameters : PagedQueryParameters
 {
     /// <summary>Only tasks of this project.</summary>
     public int? ProjectId { get; init; }
@@ -89,18 +90,33 @@ public sealed class TaskQueryParameters
     /// <summary>Only tasks with this priority.</summary>
     public TaskPriority? Priority { get; init; }
 
+    /// <summary>Only tasks in this category.</summary>
+    public int? CategoryId { get; init; }
+
     /// <summary>Only tasks assigned to this user.</summary>
     public Guid? AssignedToId { get; init; }
 
     /// <summary>true = only tasks assigned to me.</summary>
     public bool? AssignedToMe { get; init; }
 
+    /// <summary>Only tasks due at or after this time (UTC), e.g. 2026-12-01T00:00:00Z.</summary>
+    public DateTime? DueFrom { get; init; }
+
+    /// <summary>Only tasks due before this time (UTC).</summary>
+    public DateTime? DueTo { get; init; }
+
+    /// <summary>true = only overdue tasks (due date passed, not Done/Cancelled); false = only not overdue.</summary>
+    public bool? Overdue { get; init; }
+
     /// <summary>Matches title or description (contains).</summary>
     public string? Search { get; init; }
 
-    /// <summary>1-based page number (default 1).</summary>
-    public int Page { get; init; } = 1;
+    /// <summary>DueDate (default), Priority, Status, Title, CreatedAt or UpdatedAt.</summary>
+    public TaskSortField SortBy { get; init; } = TaskSortField.DueDate;
 
-    /// <summary>Items per page, 1–100 (default 20).</summary>
-    public int PageSize { get; init; } = 20;
+    /// <summary>
+    /// Asc or Desc. Default: Asc for DueDate/Title/Status, Desc for Priority (most urgent first)
+    /// and CreatedAt/UpdatedAt (newest first).
+    /// </summary>
+    public SortDirection? SortDirection { get; init; }
 }

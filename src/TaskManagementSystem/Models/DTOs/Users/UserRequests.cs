@@ -1,7 +1,10 @@
+using TaskManagementSystem.Enums;
+using TaskManagementSystem.Models.DTOs.Common;
+
 namespace TaskManagementSystem.Models.DTOs.Users;
 
-/// <summary>Filters and paging for the admin user list (bound from the query string).</summary>
-public sealed class UserQueryParameters
+/// <summary>Filters, sorting and paging for the admin user list (bound from the query string).</summary>
+public sealed class UserQueryParameters : PagedQueryParameters
 {
     /// <summary>Matches email, first name or last name (contains).</summary>
     public string? Search { get; init; }
@@ -12,11 +15,11 @@ public sealed class UserQueryParameters
     /// <summary>true = active users only, false = deactivated users only, empty = both.</summary>
     public bool? IsActive { get; init; }
 
-    /// <summary>1-based page number (default 1).</summary>
-    public int Page { get; init; } = 1;
+    /// <summary>Email (default), Name, CreatedAt or LastLogin.</summary>
+    public UserSortField SortBy { get; init; } = UserSortField.Email;
 
-    /// <summary>Items per page, 1–100 (default 20).</summary>
-    public int PageSize { get; init; } = 20;
+    /// <summary>Asc or Desc. Default: Asc for Email/Name, Desc for CreatedAt/LastLogin (newest first).</summary>
+    public SortDirection? SortDirection { get; init; }
 }
 
 /// <summary>Profile fields the user may change themselves.</summary>

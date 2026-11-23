@@ -1,3 +1,5 @@
+using TaskManagementSystem.Models.DTOs.Common;
+
 namespace TaskManagementSystem.Models.DTOs.Comments;
 
 /// <summary>A comment on a task.</summary>
@@ -25,12 +27,11 @@ public sealed record CreateCommentRequest(string Content);
 /// <param name="Content">The comment text (max 2000 characters).</param>
 public sealed record UpdateCommentRequest(string Content);
 
-/// <summary>Paging for a task's comments (oldest first).</summary>
-public sealed class CommentQueryParameters
+/// <summary>Paging for a task's comments (oldest first). Default page size 50.</summary>
+public sealed class CommentQueryParameters : PagedQueryParameters
 {
-    /// <summary>1-based page number (default 1).</summary>
-    public int Page { get; init; } = 1;
-
-    /// <summary>Items per page, 1–100 (default 50).</summary>
-    public int PageSize { get; init; } = 50;
+    public CommentQueryParameters()
+    {
+        PageSize = 50; // a conversation reads better in bigger pages; init setters can be set from a constructor
+    }
 }

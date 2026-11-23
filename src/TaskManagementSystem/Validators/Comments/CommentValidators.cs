@@ -1,5 +1,6 @@
 using FluentValidation;
 using TaskManagementSystem.Models.DTOs.Comments;
+using TaskManagementSystem.Validators.Common;
 
 namespace TaskManagementSystem.Validators.Comments;
 
@@ -25,11 +26,5 @@ public sealed class UpdateCommentRequestValidator : AbstractValidator<UpdateComm
     }
 }
 
-public sealed class CommentQueryParametersValidator : AbstractValidator<CommentQueryParameters>
-{
-    public CommentQueryParametersValidator()
-    {
-        RuleFor(x => x.Page).GreaterThanOrEqualTo(1);
-        RuleFor(x => x.PageSize).InclusiveBetween(1, 100);
-    }
-}
+/// <summary>Only paging rules — all inherited.</summary>
+public sealed class CommentQueryParametersValidator : PagedQueryValidator<CommentQueryParameters>;

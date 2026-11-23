@@ -1,19 +1,20 @@
 using FluentValidation;
 using TaskManagementSystem.Constants;
 using TaskManagementSystem.Models.DTOs.Users;
+using TaskManagementSystem.Validators.Common;
 
 namespace TaskManagementSystem.Validators.Users;
 
-public sealed class UserQueryParametersValidator : AbstractValidator<UserQueryParameters>
+public sealed class UserQueryParametersValidator : PagedQueryValidator<UserQueryParameters>
 {
     public UserQueryParametersValidator()
     {
-        RuleFor(x => x.Search).MaximumLength(100);
+        RuleFor(x => x.Search).MaximumLength(SearchMaxLength);
         RuleFor(x => x.Role)
             .Must(BeAKnownRole!).When(x => !string.IsNullOrWhiteSpace(x.Role))
             .WithMessage($"Role must be one of: {string.Join(", ", Roles.All)}.");
-        RuleFor(x => x.Page).GreaterThanOrEqualTo(1);
-        RuleFor(x => x.PageSize).InclusiveBetween(1, 100);
+        RuleFor(x => x.SortBy).IsInEnum();
+        RuleFor(x => x.SortDirection).IsInEnum();
     }
 
     private static bool BeAKnownRole(string role) =>

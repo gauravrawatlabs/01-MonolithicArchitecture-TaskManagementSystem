@@ -1,3 +1,6 @@
+using TaskManagementSystem.Enums;
+using TaskManagementSystem.Models.DTOs.Common;
+
 namespace TaskManagementSystem.Models.DTOs.Projects;
 
 /// <summary>A project in list results.</summary>
@@ -79,15 +82,18 @@ public sealed record UpdateProjectRequest(string Name, string? Description, Date
 /// <param name="UserId">The user to add.</param>
 public sealed record AddProjectMemberRequest(Guid UserId);
 
-/// <summary>Search and paging for the project list (bound from the query string).</summary>
-public sealed class ProjectQueryParameters
+/// <summary>Search, filters, sorting and paging for the project list (bound from the query string).</summary>
+public sealed class ProjectQueryParameters : PagedQueryParameters
 {
     /// <summary>Matches name or description (contains).</summary>
     public string? Search { get; init; }
 
-    /// <summary>1-based page number (default 1).</summary>
-    public int Page { get; init; } = 1;
+    /// <summary>true = only projects you own.</summary>
+    public bool? OwnedByMe { get; init; }
 
-    /// <summary>Items per page, 1–100 (default 20).</summary>
-    public int PageSize { get; init; } = 20;
+    /// <summary>CreatedAt (default), Name, StartDate or EndDate.</summary>
+    public ProjectSortField SortBy { get; init; } = ProjectSortField.CreatedAt;
+
+    /// <summary>Asc or Desc. Default: Desc for CreatedAt (newest first), Asc otherwise.</summary>
+    public SortDirection? SortDirection { get; init; }
 }

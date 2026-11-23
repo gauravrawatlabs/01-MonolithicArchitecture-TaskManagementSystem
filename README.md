@@ -192,7 +192,7 @@ The browser opens **Swagger UI** automatically:
 | DELETE | `/api/projects/{id}` | Delete a project (cascades tasks/comments) | 🔒 Owner, Admin |
 | POST | `/api/projects/{id}/members` | Add a team member | 🔒 Owner, Admin |
 | DELETE | `/api/projects/{id}/members/{userId}` | Remove a member (unassigns their tasks) | 🔒 Owner, Admin |
-| GET | `/api/tasks` | Tasks of your projects; filter by project, status, priority, assignee, search | 🔒 Logged in |
+| GET | `/api/tasks` | Tasks of your projects; filters (project, status, priority, category, assignee, due range, overdue), search, `sortBy`/`sortDirection` | 🔒 Logged in |
 | GET | `/api/tasks/{id}` | Task details (incl. `isOverdue`) | 🔒 Project members, Admin |
 | POST | `/api/tasks` | Create a task in a project you belong to | 🔒 Member + verified email |
 | PUT | `/api/tasks/{id}` | Update title, description, priority, due date, category | 🔒 Creator, project owner, Admin |
@@ -203,12 +203,15 @@ The browser opens **Swagger UI** automatically:
 | POST | `/api/tasks/{taskId}/comments` | Add a comment | 🔒 Member + verified email |
 | PUT | `/api/comments/{id}` | Edit a comment | 🔒 Author only |
 | DELETE | `/api/comments/{id}` | Delete a comment | 🔒 Author, project owner, Admin |
+| GET | `/api/dashboard` | Totals, overdue, due soon, my work, by status/priority, project progress (scoped to what you can see) | 🔒 Logged in |
 | GET | `/api/users` | Search / filter / page users | 🔒 Admin + verified email |
 | GET | `/api/users/{id}` | A user's profile | 🔒 Self or Admin (resource-based) |
 | PUT | `/api/users/me` | Update own profile | 🔒 Verified email |
 | PUT | `/api/users/{id}/roles` | Replace a user's roles | 🔒 Admin + verified email |
 | PATCH | `/api/users/{id}/status` | Activate / deactivate an account | 🔒 Admin + verified email |
 | GET | `/health` | Database connectivity check | Public |
+
+**Lists** support `page`/`pageSize` (max 100) and `sortBy`/`sortDirection` (e.g. `/api/tasks?assignedToMe=true&overdue=true&sortBy=Priority`) and return `items, page, pageSize, totalCount, totalPages, hasPreviousPage, hasNextPage`.
 
 **Testing protected endpoints in Swagger:** call `POST /api/auth/login`, copy `accessToken`, click **Authorize**, paste it.
 
@@ -256,7 +259,7 @@ dotnet test
 | 9 | Project API + team members | ✅ Done |
 | 10 | Task & Comment APIs (workflow, assignment, comments) | ✅ Done |
 | 11 | Serilog, correlation IDs, CORS, unified error handling | ✅ Done |
-| 12 | Search, filtering, sorting, pagination, dashboard | ⏳ |
+| 12 | Search, filtering, sorting, pagination, dashboard | ✅ Done |
 | 13 | Unit & integration tests | ⏳ |
 | 14 | Swagger / OpenAPI documentation | ⏳ |
 | 15 | Final README & GitHub polish | ⏳ |
@@ -278,5 +281,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [09 — Projects](docs/09-Phase9-Projects.md) | Owner/member authorization, 404 vs 403, row-level visibility, team management |
 | [10 — Tasks & Comments](docs/10-Phase10-Tasks-and-Comments.md) | Status state machine, assignment rules, due dates, comment moderation |
 | [11 — Middleware, Validation & Logging](docs/11-Phase11-Middleware-Validation-Logging.md) | Pipeline order, Serilog, correlation IDs, unified errors, CORS, no secrets in logs |
+| [12 — Search, Sorting, Paging & Dashboard](docs/12-Phase12-Search-Sorting-Paging-Dashboard.md) | Safe sorting, business-order enums, stable paging, row-level security, SQL aggregates |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.
