@@ -1,4 +1,4 @@
-# 01 — Monolithic Architecture: Task Management System
+﻿# 01 — Monolithic Architecture: Task Management System
 
 A **Task Management System** built with **ASP.NET Core Web API (.NET 10)** as a **true monolith** — part of my personal *ASP.NET Core Architecture & Design Patterns Reference Library*.
 
@@ -99,7 +99,7 @@ Full explanation: [docs/01-Phase1-Architecture-and-Design.md](docs/01-Phase1-Arc
 
 Folders are added as each phase introduces them. Responsibilities of every folder: [Phase 1 doc §9](docs/01-Phase1-Architecture-and-Design.md#9-folder-structure).
 
-## Database Design (planned)
+## Database Design
 
 ```mermaid
 erDiagram
@@ -118,7 +118,9 @@ erDiagram
     AspNetUsers ||--o{ Comments : writes
 ```
 
-Keys, indexes, constraints and cascade-delete rules: [Phase 1 doc §8](docs/01-Phase1-Architecture-and-Design.md#8-database-design).
+Implemented with EF Core code-first (`InitialCreate` migration). Seed data: roles **Admin / Manager / User** and five default categories.
+
+Keys, indexes, constraints and cascade-delete rules: [Phase 1 doc §8](docs/01-Phase1-Architecture-and-Design.md#8-database-design) (design) and [Phase 3 doc](docs/03-Phase3-Entities-and-Migrations.md) (implementation + verification).
 
 ## Getting Started
 
@@ -172,7 +174,7 @@ dotnet test
 |---|---|---|
 | 1 | Requirements, architecture, ER design, folder structure | ✅ Done |
 | 2 | Project setup, SQL Server & EF Core configuration | ✅ Done |
-| 3 | Entities, DbContext, relationships, migrations, seed data | ⏳ |
+| 3 | Entities, DbContext, relationships, migrations, seed data | ✅ Done |
 | 4 | Repository & service layers | ⏳ |
 | 5 | Identity + JWT authentication | ⏳ |
 | 6 | Refresh tokens, email verification, password flows | ⏳ |
@@ -192,5 +194,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 |---|---|
 | [01 — Architecture & Design](docs/01-Phase1-Architecture-and-Design.md) | Monolith concepts, diagrams, modules, permissions, ER design, folder structure |
 | [02 — Project Setup](docs/02-Phase2-Project-Setup.md) | Solution setup, EF Core + SQL Server, DbContext lifetime, configuration |
+| [03 — Entities & Migrations](docs/03-Phase3-Entities-and-Migrations.md) | Entities, Fluent API, relationships, delete behaviors, indexes, seeding, migrations |
 
 API endpoints, testing details and interview questions will be added here as the corresponding phases are completed.
