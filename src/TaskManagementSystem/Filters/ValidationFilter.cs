@@ -1,7 +1,7 @@
-using System.Text.Json;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc.Filters;
 using TaskManagementSystem.Exceptions;
+using TaskManagementSystem.Helpers;
 
 namespace TaskManagementSystem.Filters;
 
@@ -39,7 +39,7 @@ public sealed class ValidationFilter : IAsyncActionFilter
             foreach (var failure in result.Errors)
             {
                 // "Email" → "email" so keys match the JSON property names the client sent.
-                var key = JsonNamingPolicy.CamelCase.ConvertName(failure.PropertyName);
+                var key = ValidationErrorKeys.Normalize(failure.PropertyName);
                 if (!errors.TryGetValue(key, out var messages))
                 {
                     errors[key] = messages = [];

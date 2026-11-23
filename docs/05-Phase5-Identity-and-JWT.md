@@ -1,4 +1,4 @@
-# Phase 5 — Authentication with ASP.NET Core Identity & JWT
+﻿# Phase 5 — Authentication with ASP.NET Core Identity & JWT
 
 > **Phase status:** ✅ Implemented & verified (2026-11-23) — awaiting user review
 > **Goal:** Users can register and log in; the API issues a signed JWT access token; protected endpoints validate it. Admin account seeded at startup. Swagger gets an **Authorize** button.
@@ -175,7 +175,7 @@ dotnet user-secrets list --project src/TaskManagementSystem
 ```
 Generate a strong key in PowerShell:
 ```powershell
-$b = New-Object byte[] 64; [Security.Cryptography.RandomNumberGenerator]::Fill($b); [Convert]::ToBase64String($b)
+$b = New-Object byte[] 64; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b); [Convert]::ToBase64String($b)
 ```
 
 **Your local admin credentials** are whatever you stored in User Secrets — view them any time with `dotnet user-secrets list --project src/TaskManagementSystem`. (They are intentionally not written in this public document.)

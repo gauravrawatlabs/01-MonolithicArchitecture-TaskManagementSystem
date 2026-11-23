@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -48,6 +49,17 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(connectionString);
+
+            // EF Core logs every failed command / SaveChanges / query / connection at ERROR level — even
+            // failures our code handles (e.g. a duplicate name → 409). Every such exception either gets
+            // handled (and our services log it appropriately) or reaches ExceptionHandlingMiddleware,
+            // which logs it ONCE as an Error with the full stack trace and the correlation id.
+            // EF's own copies would log the same failure 2–3 times: downgrade them to Debug.
+            options.ConfigureWarnings(warnings => warnings.Log(
+                (CoreEventId.SaveChangesFailed, LogLevel.Debug),
+                (CoreEventId.QueryIterationFailed, LogLevel.Debug),
+                (RelationalEventId.CommandError, LogLevel.Debug),
+                (RelationalEventId.ConnectionError, LogLevel.Debug)));
 
             if (environment.IsDevelopment())
             {
@@ -229,6 +241,35 @@ public static class ServiceCollectionExtensions
         services.AddScoped<DbSeeder>();
 
         services.AddValidatorsFromAssemblyContaining(typeof(ServiceCollectionExtensions), ServiceLifetime.Transient);
+
+        return services;
+    }
+
+    /// <summary>
+    /// CORS: lets browser apps on the configured origins call this API.
+    /// - Exact origins only (no "*"); tokens travel in the Authorization header, so no cookies/credentials.
+    /// - Exposes X-Correlation-ID so front-end code can read it and show it in error messages.
+    /// - Preflight responses are cached by the browser for 10 minutes.
+    /// </summary>
+    public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
+    {
+        var settings = configuration.GetSection(CorsSettings.SectionName).Get<CorsSettings>() ?? new CorsSettings();
+
+        foreach (var origin in settings.AllowedOrigins)
+        {
+            if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri) || uri.AbsolutePath != "/" || origin.EndsWith('/'))
+            {
+                throw new InvalidOperationException(
+                    $"Invalid CORS origin '{origin}'. Use scheme://host[:port] without a path or trailing slash.");
+            }
+        }
+
+        services.AddCors(options => options.AddPolicy(CorsSettings.PolicyName, policy => policy
+            .WithOrigins(settings.AllowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithExposedHeaders(Middleware.CorrelationIdMiddleware.HeaderName)
+            .SetPreflightMaxAge(TimeSpan.FromMinutes(10))));
 
         return services;
     }

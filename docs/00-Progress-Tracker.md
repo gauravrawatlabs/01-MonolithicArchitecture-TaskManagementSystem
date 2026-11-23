@@ -11,8 +11,8 @@
 | 7 | Roles, claims, policies, resource-based authorization (+ User module) | ✅ Verified (2026-11-23) | [07-Phase7-Authorization.md](07-Phase7-Authorization.md) |
 | 8 | Category CRUD APIs | ✅ Verified (2026-11-23) | [08-Phase8-Category-CRUD.md](08-Phase8-Category-CRUD.md) |
 | 9 | Project CRUD APIs + members | ✅ Verified (2026-11-24) | [09-Phase9-Projects.md](09-Phase9-Projects.md) |
-| 10 | Task CRUD, assignment, status, comments | 🟡 Implemented & verified — awaiting your review | [10-Phase10-Tasks-and-Comments.md](10-Phase10-Tasks-and-Comments.md) |
-| 11 | Validation, middleware, exception handling, logging | ⏳ Pending | |
+| 10 | Task CRUD, assignment, status, comments | ✅ Verified (2026-11-24) | [10-Phase10-Tasks-and-Comments.md](10-Phase10-Tasks-and-Comments.md) |
+| 11 | Validation, middleware, exception handling, logging | 🟡 Implemented & verified — awaiting your review | [11-Phase11-Middleware-Validation-Logging.md](11-Phase11-Middleware-Validation-Logging.md) |
 | 12 | Search, filter, sort, pagination, dashboard | ⏳ Pending | |
 | 13 | Unit + Integration tests | ⏳ Pending | |
 | 14 | Swagger / OpenAPI finalization | ⏳ Pending | Swagger UI already added in Phase 4; Phase 14 adds JWT Authorize + polish |

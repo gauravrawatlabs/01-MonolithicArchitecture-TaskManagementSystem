@@ -139,7 +139,7 @@ dotnet build
 ### Secrets (User Secrets — never committed)
 ```powershell
 # JWT signing key: at least 32 random characters
-$b = New-Object byte[] 64; [Security.Cryptography.RandomNumberGenerator]::Fill($b)
+$b = New-Object byte[] 64; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b)
 dotnet user-secrets set "Jwt:SigningKey" ([Convert]::ToBase64String($b)) --project src/TaskManagementSystem
 
 # First admin account, created automatically at startup
@@ -221,6 +221,14 @@ All errors use the standard [ProblemDetails](https://www.rfc-editor.org/rfc/rfc9
 dotnet test
 ```
 
+## Logging & Error Handling
+
+- **Serilog** structured logging: readable console lines in Development, JSON in Production; levels in `appsettings.json` → `Serilog`.
+- Every request gets an **`X-Correlation-ID`** (reused if the client sends a valid one). It appears in every log line, the response header and every error body — quote it when reporting a problem.
+- One summary log line per request; bodies, headers and query strings are never logged (no passwords or tokens in logs).
+- Every error is an RFC 9457 **ProblemDetails** document with `traceId` and `correlationId`; validation errors add an `errors` object keyed by field name. Production 500s never expose internal details.
+- **CORS** origins are configured in `appsettings.json` → `Cors:AllowedOrigins`.
+
 ## Advantages and Disadvantages of a Monolith
 
 | ✅ Advantages | ❌ Disadvantages |
@@ -247,7 +255,7 @@ dotnet test
 | 8 | Category CRUD API | ✅ Done |
 | 9 | Project API + team members | ✅ Done |
 | 10 | Task & Comment APIs (workflow, assignment, comments) | ✅ Done |
-| 11 | Validation, middleware, exception handling, logging | ⏳ |
+| 11 | Serilog, correlation IDs, CORS, unified error handling | ✅ Done |
 | 12 | Search, filtering, sorting, pagination, dashboard | ⏳ |
 | 13 | Unit & integration tests | ⏳ |
 | 14 | Swagger / OpenAPI documentation | ⏳ |
@@ -269,5 +277,6 @@ Detailed tracker: [docs/00-Progress-Tracker.md](docs/00-Progress-Tracker.md)
 | [08 — Category CRUD](docs/08-Phase8-Category-CRUD.md) | Composite policies, REST status codes, validation layers, race-safe uniqueness |
 | [09 — Projects](docs/09-Phase9-Projects.md) | Owner/member authorization, 404 vs 403, row-level visibility, team management |
 | [10 — Tasks & Comments](docs/10-Phase10-Tasks-and-Comments.md) | Status state machine, assignment rules, due dates, comment moderation |
+| [11 — Middleware, Validation & Logging](docs/11-Phase11-Middleware-Validation-Logging.md) | Pipeline order, Serilog, correlation IDs, unified errors, CORS, no secrets in logs |
 
 Testing details and interview questions will be added here as the corresponding phases are completed.
