@@ -18,4 +18,11 @@ public static class Policies
 
     /// <summary>Composite: (Admin OR Manager) AND verified email — create projects.</summary>
     public const string CanCreateProjects = nameof(CanCreateProjects);
+
+    /// <summary>
+    /// Composite: (Admin OR Manager) AND verified email — search users by name/email (GET /api/users/lookup),
+    /// e.g. to pick a new project member. Same audience as CanCreateProjects (the people who own projects),
+    /// but a separate name so the two rules can evolve independently.
+    /// </summary>
+    public const string CanLookupUsers = nameof(CanLookupUsers);
 }

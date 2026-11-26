@@ -30,21 +30,48 @@ public sealed class ProjectRepository(ApplicationDbContext dbContext) : IProject
 
         var totalCount = await projects.CountAsync(cancellationToken);
 
-        var items = await ApplySorting(projects, query)
+        // Step 1 (SQL): one row per project; every counter is a correlated COUNT sub-query,
+        // so no members or tasks are loaded into memory — only the numbers.
+        var rows = await ApplySorting(projects, query)
             .ApplyPaging(query)
-            .Select(p => new ProjectSummaryResponse(
+            .Select(p => new
+            {
                 p.Id,
                 p.Name,
                 p.Description,
                 p.StartDate,
                 p.EndDate,
                 p.OwnerId,
-                p.Owner.FirstName + " " + p.Owner.LastName,
-                p.Members.Count,           // COUNT sub-queries — no members/tasks are loaded
-                p.Tasks.Count,
+                OwnerName = p.Owner.FirstName + " " + p.Owner.LastName,
+                MemberCount = p.Members.Count,
+                TaskCount = p.Tasks.Count,
+                OpenTaskCount = p.Tasks.Count(t => t.Status != TaskItemStatus.Done && t.Status != TaskItemStatus.Cancelled),
+                DoneTaskCount = p.Tasks.Count(t => t.Status == TaskItemStatus.Done),
+                CancelledTaskCount = p.Tasks.Count(t => t.Status == TaskItemStatus.Cancelled),
                 p.CreatedAtUtc,
-                p.UpdatedAtUtc))
+                p.UpdatedAtUtc
+            })
             .ToListAsync(cancellationToken);
+
+        // Step 2 (C#): the percentage is presentation math on at most one page of rows,
+        // using the SAME helper as the dashboard so both always agree.
+        var items = rows
+            .Select(x => new ProjectSummaryResponse(
+                x.Id,
+                x.Name,
+                x.Description,
+                x.StartDate,
+                x.EndDate,
+                x.OwnerId,
+                x.OwnerName,
+                x.MemberCount,
+                x.TaskCount,
+                x.OpenTaskCount,
+                x.DoneTaskCount,
+                ProjectProgress.CompletionPercent(x.TaskCount, x.DoneTaskCount, x.CancelledTaskCount),
+                x.CreatedAtUtc,
+                x.UpdatedAtUtc))
+            .ToList();
 
         return (items, totalCount);
     }

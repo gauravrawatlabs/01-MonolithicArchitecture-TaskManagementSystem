@@ -180,4 +180,38 @@ public sealed class ValidatorTests
         validator.TestValidate(new UpdateUserRolesRequest(["Boss"])).ShouldHaveValidationErrorFor("Roles[0]");
         validator.TestValidate(new UpdateUserRolesRequest(["manager"])).ShouldNotHaveAnyValidationErrors();
     }
+
+    // ---------- User lookup: required search, minimum length, limit range ----------
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("a")]
+    [InlineData(" a ")]   // trimmed length counts
+    public void UserLookup_MissingOrTooShortSearch_HasSearchError(string? search)
+    {
+        var result = new UserLookupQueryParametersValidator().TestValidate(new UserLookupQueryParameters { Search = search });
+
+        result.ShouldHaveValidationErrorFor(x => x.Search);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(21)]
+    public void UserLookup_LimitOutOfRange_HasLimitError(int limit)
+    {
+        var result = new UserLookupQueryParametersValidator().TestValidate(
+            new UserLookupQueryParameters { Search = "jane", Limit = limit });
+
+        result.ShouldHaveValidationErrorFor(x => x.Limit);
+    }
+
+    [Fact]
+    public void UserLookup_ValidQuery_HasNoErrors()
+    {
+        var result = new UserLookupQueryParametersValidator().TestValidate(
+            new UserLookupQueryParameters { Search = "ja", Limit = 20 });
+
+        result.ShouldNotHaveAnyValidationErrors();
+    }
 }

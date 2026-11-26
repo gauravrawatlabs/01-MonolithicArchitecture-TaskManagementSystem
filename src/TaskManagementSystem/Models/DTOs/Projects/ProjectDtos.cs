@@ -13,6 +13,9 @@ namespace TaskManagementSystem.Models.DTOs.Projects;
 /// <param name="OwnerName">The owner's full name.</param>
 /// <param name="MemberCount">Number of members, including the owner.</param>
 /// <param name="TaskCount">Number of tasks in the project.</param>
+/// <param name="OpenTaskCount">Tasks that are not Done and not Cancelled.</param>
+/// <param name="DoneTaskCount">Tasks that are Done.</param>
+/// <param name="CompletionPercent">Done ÷ (Total − Cancelled) × 100, rounded to 1 decimal; 0 when there is nothing to do (same formula as the dashboard).</param>
 /// <param name="CreatedAtUtc">Creation time (UTC).</param>
 /// <param name="UpdatedAtUtc">Last update time (UTC), or null.</param>
 public sealed record ProjectSummaryResponse(
@@ -25,6 +28,9 @@ public sealed record ProjectSummaryResponse(
     string OwnerName,
     int MemberCount,
     int TaskCount,
+    int OpenTaskCount,
+    int DoneTaskCount,
+    double CompletionPercent,
     DateTime CreatedAtUtc,
     DateTime? UpdatedAtUtc);
 

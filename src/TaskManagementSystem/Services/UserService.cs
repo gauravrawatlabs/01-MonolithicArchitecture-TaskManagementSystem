@@ -39,6 +39,11 @@ public sealed class UserService(
         return new PagedResult<UserProfileResponse>(items, query.Page, query.PageSize, totalCount);
     }
 
+    public Task<IReadOnlyList<UserLookupResponse>> LookupAsync(
+        UserLookupQueryParameters query, CancellationToken cancellationToken) =>
+        // The validator guarantees Search is present (≥ 2 chars) and Limit is 1–20.
+        userRepository.SearchActiveAsync(query.Search!, query.Limit, cancellationToken);
+
     public async Task<UserProfileResponse> GetByIdAsync(
         Guid id, ClaimsPrincipal currentUser, CancellationToken cancellationToken)
     {

@@ -21,7 +21,24 @@ public sealed class UserQueryParametersValidator : PagedQueryValidator<UserQuery
         Roles.All.Contains(role, StringComparer.OrdinalIgnoreCase);
 }
 
-public sealed class UpdateProfileRequestValidator : AbstractValidator<UpdateProfileRequest>
+public sealed class UserLookupQueryParametersValidator : AbstractValidator<UserLookupQueryParameters>
+{
+    public UserLookupQueryParametersValidator()
+    {
+        // A minimum length stops "list everyone" requests: the lookup is for FINDING a person, not browsing.
+        RuleFor(x => x.Search)
+            .NotEmpty().WithMessage("Search is required.")
+            .Must(search => search!.Trim().Length >= UserLookupQueryParameters.MinSearchLength)
+                // CurrentValidator: by default .When() applies to ALL earlier rules in the chain,
+                // which would silently switch off NotEmpty() for an empty search.
+                .When(x => !string.IsNullOrWhiteSpace(x.Search), ApplyConditionTo.CurrentValidator)
+                .WithMessage($"Search must be at least {UserLookupQueryParameters.MinSearchLength} characters long.")
+            .MaximumLength(PagedQueryValidator<UserQueryParameters>.SearchMaxLength);
+        RuleFor(x => x.Limit).InclusiveBetween(1, UserLookupQueryParameters.MaxLimit);
+    }
+}
+
+public sealed class UpdateProfileRequestValidator: AbstractValidator<UpdateProfileRequest>
 {
     public UpdateProfileRequestValidator()
     {

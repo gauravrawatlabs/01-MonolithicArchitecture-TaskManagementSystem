@@ -30,7 +30,7 @@ public sealed class ApiDocumentationTests(CustomWebApplicationFactory factory) :
         "GET /api/tasks", "POST /api/tasks", "GET /api/tasks/{id}", "PUT /api/tasks/{id}", "DELETE /api/tasks/{id}",
         "PATCH /api/tasks/{id}/assignee", "PATCH /api/tasks/{id}/status",
         "GET /api/tasks/{taskId}/comments", "POST /api/tasks/{taskId}/comments",
-        "GET /api/users", "GET /api/users/{id}", "PUT /api/users/me", "PUT /api/users/{id}/roles", "PATCH /api/users/{id}/status"
+        "GET /api/users", "GET /api/users/lookup", "GET /api/users/{id}", "PUT /api/users/me", "PUT /api/users/{id}/roles", "PATCH /api/users/{id}/status"
     ];
 
     private static readonly string[] AnonymousOperations =

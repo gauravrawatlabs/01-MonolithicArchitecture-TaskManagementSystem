@@ -22,6 +22,23 @@ public sealed class UserQueryParameters : PagedQueryParameters
     public SortDirection? SortDirection { get; init; }
 }
 
+/// <summary>
+/// Search for the user lookup (GET /api/users/lookup), bound from the query string.
+/// Deliberately NOT paged: it feeds an autocomplete box, so it returns only the best few matches.
+/// </summary>
+public sealed class UserLookupQueryParameters
+{
+    public const int DefaultLimit = 10;
+    public const int MaxLimit = 20;
+    public const int MinSearchLength = 2;
+
+    /// <summary>Matches email, first name or last name (contains). At least 2 characters.</summary>
+    public string? Search { get; init; }
+
+    /// <summary>Maximum number of results, 1–20 (default 10).</summary>
+    public int Limit { get; init; } = DefaultLimit;
+}
+
 /// <summary>Profile fields the user may change themselves.</summary>
 /// <param name="FirstName">First name (max 50 characters).</param>
 /// <param name="LastName">Last name (max 50 characters).</param>

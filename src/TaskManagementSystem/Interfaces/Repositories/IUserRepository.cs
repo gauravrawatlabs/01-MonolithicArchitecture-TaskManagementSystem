@@ -14,4 +14,10 @@ public interface IUserRepository
     /// </summary>
     Task<(IReadOnlyList<UserProfileResponse> Items, int TotalCount)> GetPagedAsync(
         UserQueryParameters query, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Up to <paramref name="limit"/> ACTIVE users whose email, first or last name contains
+    /// <paramref name="search"/>, ordered by name. Inactive users are excluded because they can't be added to projects.
+    /// </summary>
+    Task<IReadOnlyList<UserLookupResponse>> SearchActiveAsync(string search, int limit, CancellationToken cancellationToken);
 }

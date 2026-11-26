@@ -40,6 +40,25 @@ public sealed class UsersController(IUserService userService) : ControllerBase
         return Ok(await userService.GetUsersAsync(query, cancellationToken));
     }
 
+    /// <summary>Finds active users by name or email, e.g. to add a project member. Admin or Manager.</summary>
+    /// <remarks>
+    /// Returns at most `limit` (default 10, max 20) users, ordered by name. Not paged — it is meant for
+    /// an autocomplete box. `search` must be at least 2 characters. Returns only id, name, email and job title.
+    /// </remarks>
+    /// <response code="200">The matching users (possibly empty).</response>
+    /// <response code="400">Missing or too short search, or invalid limit.</response>
+    /// <response code="403">Not an Admin/Manager, or email not verified.</response>
+    [HttpGet("lookup")]
+    [Authorize(Policy = Policies.CanLookupUsers)]
+    [ProducesResponseType<IReadOnlyList<UserLookupResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest, "application/problem+json")]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden, "application/problem+json")]
+    public async Task<ActionResult<IReadOnlyList<UserLookupResponse>>> Lookup(
+        [FromQuery] UserLookupQueryParameters query, CancellationToken cancellationToken)
+    {
+        return Ok(await userService.LookupAsync(query, cancellationToken));
+    }
+
     /// <summary>Gets a user's profile. Allowed for the user themselves or an Admin.</summary>
     /// <response code="200">The profile.</response>
     /// <response code="403">This is not your account and you are not an Admin.</response>

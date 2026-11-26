@@ -73,4 +73,18 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
 
         return (items, totalCount);
     }
+
+    public async Task<IReadOnlyList<UserLookupResponse>> SearchActiveAsync(
+        string search, int limit, CancellationToken cancellationToken)
+    {
+        var term = search.Trim();
+
+        return await dbContext.Users.AsNoTracking()
+            .Where(u => u.IsActive)
+            .Where(u => u.Email!.Contains(term) || u.FirstName.Contains(term) || u.LastName.Contains(term))
+            .OrderBy(u => u.FirstName).ThenBy(u => u.LastName).ThenBy(u => u.Id) // stable order
+            .Take(limit)
+            .Select(u => new UserLookupResponse(u.Id, u.FirstName + " " + u.LastName, u.Email!, u.JobTitle))
+            .ToListAsync(cancellationToken);
+    }
 }

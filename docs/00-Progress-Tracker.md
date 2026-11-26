@@ -1,4 +1,4 @@
-﻿# Progress Tracker — 01-MonolithicArchitecture-TaskManagementSystem
+# Progress Tracker — 01-MonolithicArchitecture-TaskManagementSystem
 
 | Phase | Topic | Status | Notes / Doc |
 |---|---|---|---|
@@ -17,5 +17,6 @@
 | 13 | Unit + Integration tests | ✅ Verified (2026-11-24) — 138 unit + 20 integration, 86.9 % line coverage | [13-Phase13-Unit-and-Integration-Tests.md](13-Phase13-Unit-and-Integration-Tests.md) |
 | 14 | Swagger / OpenAPI finalization | ✅ Verified (2026-11-24) — +9 contract tests | [14-Phase14-OpenAPI-and-Swagger.md](14-Phase14-OpenAPI-and-Swagger.md) |
 | 15 | README, .gitignore, GitHub push | ✅ Done (2026-11-24) | [15-Phase15-Git-GitHub-and-Release.md](15-Phase15-Git-GitHub-and-Release.md) |
+| 16 | Frontend support: user lookup + project progress counts | ✅ Verified (2026-11-26) — 151 unit + 37 integration tests | [16-Frontend-Support-Endpoints.md](16-Frontend-Support-Endpoints.md) |
 
 **Legend:** ✅ Verified · 🟡 In progress / awaiting approval · ⏳ Pending · ❌ Blocked

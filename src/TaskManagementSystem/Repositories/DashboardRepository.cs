@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagementSystem.Data;
 using TaskManagementSystem.Enums;
+using TaskManagementSystem.Helpers;
 using TaskManagementSystem.Interfaces.Repositories;
 using TaskManagementSystem.Models.DTOs.Dashboard;
 using TaskManagementSystem.Models.Entities;
@@ -92,7 +93,7 @@ public sealed class DashboardRepository(ApplicationDbContext dbContext) : IDashb
                 x.Open,
                 x.Done,
                 x.Overdue,
-                x.Total - x.Cancelled == 0 ? 0 : Math.Round(100.0 * x.Done / (x.Total - x.Cancelled), 1)))
+                ProjectProgress.CompletionPercent(x.Total, x.Done, x.Cancelled)))
             .ToList();
     }
 

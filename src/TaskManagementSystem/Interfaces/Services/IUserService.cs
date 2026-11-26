@@ -10,6 +10,9 @@ public interface IUserService
     /// <summary>Admin: filtered, paged list of users.</summary>
     Task<PagedResult<UserProfileResponse>> GetUsersAsync(UserQueryParameters query, CancellationToken cancellationToken);
 
+    /// <summary>Admin/Manager: the best few active users matching a search term (autocomplete).</summary>
+    Task<IReadOnlyList<UserLookupResponse>> LookupAsync(UserLookupQueryParameters query, CancellationToken cancellationToken);
+
     /// <summary>A user's profile — only for that user or an Admin (resource-based authorization).</summary>
     /// <exception cref="Exceptions.NotFoundException">No such user.</exception>
     /// <exception cref="Exceptions.ForbiddenException">Not your account and you are not an Admin.</exception>

@@ -190,6 +190,12 @@ public static class ServiceCollectionExtensions
             .AddPolicy(Policies.CanCreateProjects, policy => policy
                 .RequireAuthenticatedUser()
                 .RequireRole(Roles.Admin, Roles.Manager)
+                .RequireVerifiedEmail())
+
+            // Project owners (Admin/Manager) need to FIND users to add them as members.
+            .AddPolicy(Policies.CanLookupUsers, policy => policy
+                .RequireAuthenticatedUser()
+                .RequireRole(Roles.Admin, Roles.Manager)
                 .RequireVerifiedEmail());
 
         // RESOURCE-based handlers (invoked via IAuthorizationService.AuthorizeAsync(user, resource, operation)).
