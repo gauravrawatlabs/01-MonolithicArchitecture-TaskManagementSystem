@@ -9,7 +9,7 @@ Users register and verify their email, log in with JWT + rotating refresh tokens
 | **Architecture** | Layered monolith (Controllers → Services → Repositories → EF Core) in a single Web API project |
 | **API** | 40 REST operations, OpenAPI 3.1 + Swagger UI, RFC 9457 ProblemDetails errors |
 | **Security** | ASP.NET Core Identity, JWT (15 min) + refresh-token rotation with reuse detection, role / claims / policy / resource-based authorization, secure by default |
-| **Quality** | 151 unit + 37 integration tests (all passing), 86.9 % line coverage, 0 build warnings |
+| **Quality** | 151 unit + 39 integration tests (all passing), 86.9 % line coverage, 0 build warnings |
 | **Docs** | 15 phase-by-phase learning documents in [`docs/`](docs/) |
 
 ---
@@ -182,7 +182,7 @@ sequenceDiagram
 │   └── Program.cs          composition root: services + middleware pipeline
 └── tests/
     ├── TaskManagementSystem.UnitTests/         151 tests: workflow, handlers, validators, services
-    └── TaskManagementSystem.IntegrationTests/   37 tests: real HTTP pipeline + test SQL Server database
+    └── TaskManagementSystem.IntegrationTests/   39 tests: real HTTP pipeline + test SQL Server database
 ```
 Every folder's responsibility is explained in [docs/01 §9](docs/01-Phase1-Architecture-and-Design.md#9-folder-structure).
 
@@ -437,7 +437,7 @@ Every error is an **RFC 9457 ProblemDetails** document (`application/problem+jso
 ## Testing
 
 ```powershell
-dotnet test                                        # 151 unit + 37 integration tests
+dotnet test                                        # 151 unit + 39 integration tests
 dotnet test tests/TaskManagementSystem.UnitTests   # unit tests only (no database needed)
 
 # merged coverage report → TestResults/CoverageReport/index.html
@@ -567,4 +567,4 @@ Each phase document in [`docs/`](docs/) contains its own detailed question set.
 | 13 | [Unit & Integration Tests](docs/13-Phase13-Unit-and-Integration-Tests.md) | Test pyramid, AAA, test doubles, WebApplicationFactory, coverage |
 | 14 | [OpenAPI & Swagger](docs/14-Phase14-OpenAPI-and-Swagger.md) | Transformers, rule-based responses, examples, contract tests |
 | 15 | [Git & GitHub](docs/15-Phase15-Git-GitHub-and-Release.md) | Repository hygiene, commands, history rewriting, final verification |
-| 16 | [Frontend Support Endpoints](docs/16-Frontend-Support-Endpoints.md) | User lookup for member pickers, project progress counts, shared completion formula |
+| 16 | [Frontend Support Endpoints](docs/16-Frontend-Support-Endpoints.md) | User lookup for member pickers, project progress counts, shared completion formula, strict JSON numbers |

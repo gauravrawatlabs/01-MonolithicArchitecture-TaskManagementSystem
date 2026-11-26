@@ -69,6 +69,22 @@ public sealed class ErrorAndInfrastructureTests(CustomWebApplicationFactory fact
     }
 
     [Fact]
+    public async Task NumbersSentAsStrings_AreRejected_WithAFieldError()
+    {
+        // Arrange: JsonNumberHandling.Strict: the contract says "number", so "1" is invalid input
+        var user = await CreateUserAsync();
+        var client = ClientFor(user.AccessToken);
+
+        // Act
+        var response = await client.PostAsJsonAsync("/api/tasks", new { projectId = "1", title = "Numbers as strings" });
+
+        // Assert: a normal 400 ProblemDetails with the error on the right field, not a 500
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var problem = await ReadProblemAsync(response);
+        Assert.True(problem.GetProperty("errors").TryGetProperty("projectId", out _));
+    }
+
+    [Fact]
     public async Task NotFound_UnknownResourceAndUnknownRoute_AreProblemDetails()
     {
         var client = ClientFor((await CreateUserAsync()).AccessToken);

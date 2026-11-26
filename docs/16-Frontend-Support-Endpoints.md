@@ -1,6 +1,6 @@
 # Phase 16 — Frontend Support Endpoints
 
-> Status: ✅ Verified (2026-11-26) · 151 unit + 37 integration tests passing.
+> Status: ✅ Verified (2026-11-26) · 151 unit + 39 integration tests passing.
 > Why: designing the React frontend (frontend repo, Phase 1, gaps **G1** and **G2**) showed two things the UI
 > needs that the API could not provide. Both are small, additive changes; the backend stays one monolith and
 > no existing contract was removed.
@@ -73,7 +73,27 @@ in one place means the dashboard and the project list can never disagree.
 | `ProjectList_ReturnsTaskProgress_SameFormulaAsDashboard` | integration | 4 tasks, 1 done, 1 cancelled → 33.3 %; empty project → 0 |
 | OpenAPI contract list | integration | `GET /api/users/lookup` documented |
 
+## D7 — strict JSON numbers (`JsonNumberHandling.Strict`)
+
+**Problem.** ASP.NET Core's web JSON defaults include `NumberHandling = AllowReadingFromString`, so the API
+accepted `"12"` as well as `12`. The OpenAPI generator faithfully documented every number as
+`type: ["integer", "string"]`, and the frontend's generated TypeScript types became `id: number | string`
+(62 fields). The API always *sent* real numbers, so the documented contract was looser than reality.
+
+**Solution.** `NumberHandling = JsonNumberHandling.Strict` in **both** JSON option sets in `Program.cs`:
+`AddJsonOptions` (MVC reads request bodies with it) and `ConfigureHttpJsonOptions` (the OpenAPI generator
+reads it). Now `"projectId": "1"` is a normal **400** with `errors.projectId`, and the schema says `integer`.
+
+| Test | Checks |
+|---|---|
+| `NumbersSentAsStrings_AreRejected_WithAFieldError` | `"1"` for `projectId` → 400 ProblemDetails with a `projectId` field error |
+| `Schemas_DescribeNumbersAsNumbers_NotAsStrings` | no schema property is typed integer/number **and** string; `TaskResponse.id` is `integer` |
+
+Both tests were run against the old setting first and **failed**, which proves they guard the change.
+Query-string parameters (`?page=2`) are unaffected: they are model-bound, not JSON.
+
 ## Interview questions
 1. Why add a new endpoint instead of loosening the policy on `GET /api/users`?
 2. Why is the percentage computed in C# rather than in SQL here?
 3. Is adding a field to a response DTO a breaking change? When could it be one?
+4. Why can a lenient JSON setting make an API's documented contract less precise than its real behaviour?

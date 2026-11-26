@@ -34,6 +34,11 @@ try
             // Enums as readable strings ("InProgress") instead of numbers (1) in requests and responses.
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 
+            // Numbers must be JSON numbers: 12, not "12". The web defaults ALLOW reading numbers from
+            // strings, which also makes the OpenAPI document describe every number as "integer | string"
+            // (and generated TypeScript clients as number | string). Strict = one exact contract.
+            options.JsonSerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+
             // Don't echo System.Text.Json's exception text (it contains internal .NET type names) in 400s.
             options.AllowInputFormatterExceptionMessages = false;
         })
@@ -45,9 +50,12 @@ try
                 throw new RequestValidationException(ValidationErrorKeys.FromModelState(context.ModelState)));
 
     // The OpenAPI generator reads these (minimal-API) JSON options — keep them in sync so the
-    // documented schema also shows enums as strings.
+    // documented schema also shows enums as strings and numbers as plain numbers.
     builder.Services.ConfigureHttpJsonOptions(options =>
-        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    {
+        options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.SerializerOptions.NumberHandling = JsonNumberHandling.Strict;
+    });
 
     builder.Services.AddProblemDetailsWithCorrelationId();   // RFC 9457 errors + "correlationId"
     builder.Services.AddCorsPolicy(builder.Configuration);

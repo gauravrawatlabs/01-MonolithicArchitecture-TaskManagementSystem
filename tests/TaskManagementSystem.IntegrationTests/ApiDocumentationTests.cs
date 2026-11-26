@@ -15,7 +15,7 @@ public sealed class ApiDocumentationTests(CustomWebApplicationFactory factory) :
 {
     private static readonly string[] HttpMethods = ["get", "post", "put", "patch", "delete"];
 
-    /// <summary>The complete public API surface (40 operations). Changing the API means changing this list — deliberately.</summary>
+    /// <summary>The complete public API surface (41 operations). Changing the API means changing this list — deliberately.</summary>
     private static readonly string[] ExpectedOperations =
     [
         "POST /api/account/change-password", "POST /api/account/confirm-email", "POST /api/account/forgot-password",
@@ -148,6 +148,38 @@ public sealed class ApiDocumentationTests(CustomWebApplicationFactory factory) :
         var createTask = Operations(document).Single(o => o.Key == "POST /api/tasks").Operation;
         var example = createTask.GetProperty("requestBody").GetProperty("content").GetProperty("application/json").GetProperty("example");
         Assert.Equal("High", example.GetProperty("priority").GetString());
+    }
+
+    [Fact]
+    public async Task Schemas_DescribeNumbersAsNumbers_NotAsStrings()
+    {
+        // With the web defaults (AllowReadingFromString) every number was documented as
+        // type ["integer", "string"]; generated clients then typed ids as number | string.
+        var schemas = (await GetDocumentAsync()).GetProperty("components").GetProperty("schemas");
+        var offenders = new List<string>();
+
+        foreach (var schema in schemas.EnumerateObject())
+        {
+            if (!schema.Value.TryGetProperty("properties", out var properties))
+            {
+                continue;
+            }
+
+            foreach (var property in properties.EnumerateObject())
+            {
+                if (property.Value.TryGetProperty("type", out var type) &&
+                    type.ValueKind == JsonValueKind.Array &&
+                    type.EnumerateArray().Any(t => t.GetString() is "integer" or "number") &&
+                    type.EnumerateArray().Any(t => t.GetString() == "string"))
+                {
+                    offenders.Add($"{schema.Name}.{property.Name}");
+                }
+            }
+        }
+
+        Assert.Empty(offenders);
+        var taskId = schemas.GetProperty("TaskResponse").GetProperty("properties").GetProperty("id");
+        Assert.Equal("integer", taskId.GetProperty("type").GetString());
     }
 
     [Fact]
